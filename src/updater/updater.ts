@@ -101,11 +101,10 @@ export default class TAModsUpdater {
                 let fpath;
                 if (f._.split(/[\/\\]/)[0] == '!CONFIG') {
                     froot = RootLocation.CONFIG_DIRECTORY;
-                    fpath = f._.split(/[\/\\]/).slice();
                 } else {
-                    froot = RootLocation.LAUNCHER_DIRECTORY;
-                    fpath = f._;
+                    froot = RootLocation.LAUNCHER_DIRECTORY; 
                 }
+                fpath = f._;
                 files.push(new TAModsFile(froot, fpath, version));
             }
             channels.set(channelName, files);
@@ -151,7 +150,14 @@ export default class TAModsUpdater {
         }
     }
 
-    public static async update(channel: string): Promise<void> {
+    private static async downloadFile(file: TAModsFile): Promise<void> {
+        let localPathArr = file.path.split(/[\/\\]/);
+        localPathArr.pop();
+        const localPath = localPathArr.join('/');
+        download(`${this.baseUrl}/${file.path}`, `./tmp/${localPath}`);
+    }
+
+    public static async update(channel: string, downloadSync: boolean = false): Promise<void> {
         const updateList = await this.getUpdateList(channel);
 
         // Don't update if not required
@@ -165,17 +171,20 @@ export default class TAModsUpdater {
         await Promise.all(tmpContents.map(f => fs.unlink(`./tmp/${f}`)));
 
         // Redownload the version manifest
-        await download(`${this.baseUrl}/${this.versionFile}`, `./tmp/${this.versionFile}`);
+        await download(`${this.baseUrl}/${this.versionFile}`, `./tmp`);
 
-        // Download new and updated files (in order, not in parallel)
-        for (const file of updateList) {
-            console.log(`Downloading ${file.path}...`)
-            if (file.root == RootLocation.CONFIG_DIRECTORY) {
-                await download(`${this.baseUrl}/!CONFIG/${file.path}`, `./tmp/!CONFIG/${file.path}`);
-            } else {
-                await download(`${this.baseUrl}/${this.versionFile}`, `./tmp/${file.path}`);
+        if (downloadSync) {
+            // Download in sequence
+            for (const file of updateList) {
+                await this.downloadFile(file);
             }
+        } else {
+            // Download asynchronously
+            await Promise.all(updateList.map(this.downloadFile));
         }
+
+        // Move files to the appropriate directory
+        
     }
 
 }
