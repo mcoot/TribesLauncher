@@ -1,0 +1,80 @@
+{
+  "name": "tribeslauncher",
+  "productName": "tribeslauncher",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "tslint --project tsconfig.json --type-check --force",
+    "updaterTest": "ts-node ./src/updater/updaterTest.ts"
+  },
+  "keywords": [],
+  "author": "Joseph Spearritt",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {
+        "packageManager": "yarn"
+      },
+      "electronWinstallerConfig": {
+        "name": "tribeslauncher"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": "",
+        "name": "tribeslauncher"
+      }
+    }
+  },
+  "dependencies": {
+    "@types/download": "^6.2.2",
+    "@types/electron-devtools-installer": "^2.0.2",
+    "@types/fs-extra": "^5.0.1",
+    "@types/node": "^9.6.1",
+    "@types/react": "^0.14.55",
+    "@types/react-dom": "^0.14.20",
+    "@types/xml-parser": "^1.2.29",
+    "download": "^6.2.5",
+    "electron-compile": "^6.4.2",
+    "electron-devtools-installer": "^2.1.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "fs-extra": "^5.0.0",
+    "fs-promise": "^2.0.3",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-hot-loader": "^3.0.0-beta.6",
+    "ts-fs-promise": "^1.0.4",
+    "tslib": "^1.4.0"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "electron-forge": "^5.1.1",
+    "electron-prebuilt-compile": "1.8.4",
+    "ts-node": "^5.0.1",
+    "tslint": "^5.1.0",
+    "typescript": "^2.8.1"
+  }
+}

@@ -1,0 +1,2 @@
+import TAModsUpdater from './updater';
+
