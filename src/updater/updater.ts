@@ -1,5 +1,8 @@
 import * as fs from 'fs-extra';
+const rmfr = require('rmfr');
+import * as os from 'os';
 import * as download from 'download';
+import * as Registry from 'winreg';
 
 const xml2js = require('xml2js');
 
@@ -74,8 +77,9 @@ export default class TAModsUpdater {
             parser.parseString(data, (err: any, result: any) => {
                 if (err) {
                     rej(err);
+                } else {
+                    res(result);
                 }
-                res(result);
             });
         });
     }
@@ -117,7 +121,7 @@ export default class TAModsUpdater {
         return this.parseVersionManifest(data);
     }
 
-    private static async getUpdateList(channel: string): Promise<TAModsFile[]> {
+    private static async getUpdateList(channel: string, localManifestFile: string): Promise<TAModsFile[]> {
         // Get the remote manifest
         const remoteManifestData = await download(`${TAModsUpdater.baseUrl}/${TAModsUpdater.versionFile}`);
         const remoteManifest = await this.parseVersionManifest(remoteManifestData.toString('utf8'));
@@ -128,7 +132,7 @@ export default class TAModsUpdater {
 
         // Get the local manifest, if there is one
         if (fs.existsSync(TAModsUpdater.versionFile)) {
-            const localManifest = await this.parseVersionManifestFile('version.xml');
+            const localManifest = await this.parseVersionManifestFile(localManifestFile);
 
             if (!localManifest.channels.has(channel)) {
                 // New channel, need full redownload
@@ -150,41 +154,83 @@ export default class TAModsUpdater {
         }
     }
 
-    private static async downloadFile(file: TAModsFile): Promise<void> {
+    private static async downloadFile(file: TAModsFile, baseDir: string): Promise<void> {
         let localPathArr = file.path.split(/[\/\\]/);
         localPathArr.pop();
         const localPath = localPathArr.join('/');
-        download(`${this.baseUrl}/${file.path}`, `./tmp/${localPath}`);
+        await download(`${this.baseUrl}/${file.path}`, `${baseDir}/${localPath}`);
     }
 
-    public static async update(channel: string, downloadSync: boolean = false): Promise<void> {
-        const updateList = await this.getUpdateList(channel);
+    private static async regKeyValuesPromise(regKey: Registry.Registry): Promise<Registry.RegistryItem[]> {
+        return new Promise((res: (items: Registry.RegistryItem[]) => void, rej: (err: Error) => void) => {
+            regKey.values((err, items) => {
+                if (err) {
+                    rej(err);
+                } else {
+                    res(items);
+                }
+            });
+        });
+    }
+
+    public static async getConfigDirectory(): Promise<string> {
+        const regKey = new Registry({
+            hive: Registry.HKCU,
+            key: '\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders'
+        });
+        
+        const values = await this.regKeyValuesPromise(regKey);
+        const result = values.find((regItem) => regItem.name === 'Personal');
+        if (!result) {
+            throw new Error('Could not retrieve user Documents directory from the registry');
+        }
+        return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
+    }
+
+    public static async update(channel: string, baseDir: string, downloadSync: boolean = false): Promise<void> {
+        const updateList = await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`);
 
         // Don't update if not required
         if (updateList.length == 0) {
             return;
         }
 
-        // Setup temporary download directory, clearing it out if files are already there
-        await fs.mkdirp('./tmp');
-        const tmpContents = await fs.readdir('./tmp');
-        await Promise.all(tmpContents.map(f => fs.unlink(`./tmp/${f}`)));
+        // Setup temporary download directory, clearing it out if files are already there\
+        if ((await fs.pathExists(`${baseDir}/tmp`))) {
+            await rmfr(`${baseDir}/tmp`);
+        }
+        await fs.mkdirp(`${baseDir}/tmp`);
 
         // Redownload the version manifest
-        await download(`${this.baseUrl}/${this.versionFile}`, `./tmp`);
+        await download(`${this.baseUrl}/${this.versionFile}`, `${baseDir}/tmp`);
 
         if (downloadSync) {
             // Download in sequence
             for (const file of updateList) {
-                await this.downloadFile(file);
+                await this.downloadFile(file, `${baseDir}/tmp`);
             }
         } else {
             // Download asynchronously
-            await Promise.all(updateList.map(this.downloadFile));
+            await Promise.all(updateList.map(f => this.downloadFile(f, `${baseDir}/tmp`)));
         }
-
-        // Move files to the appropriate directory
         
+
+        const allFiles = await fs.readdir(`${baseDir}/tmp`);
+        const configFiles = await fs.readdir(`${baseDir}/tmp/!CONFIG`);
+        const nonConfigFiles = allFiles.filter(f => f !== '!CONFIG');
+
+        // Move non-config files to the main directory
+        await Promise.all(nonConfigFiles.map(f => fs.copy(`${baseDir}/tmp/${f}`, `${baseDir}/${f}`)));
+
+        // Move config files to the appropriate directory
+        const configDir = await this.getConfigDirectory();
+        if (!(await fs.pathExists(configDir))) {
+            await fs.mkdirp(configDir);
+        }
+        await Promise.all(configFiles.map(f => fs.copy(`${baseDir}/tmp/!CONFIG/${f}`, `${configDir}/${f}`)));
+
+        // Delete temp dir
+        await rmfr(`${baseDir}/tmp`);
     }
 
 }

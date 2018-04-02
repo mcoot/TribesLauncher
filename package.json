@@ -54,6 +54,7 @@
     "@types/node": "^9.6.1",
     "@types/react": "^0.14.55",
     "@types/react-dom": "^0.14.20",
+    "@types/winreg": "^1.2.30",
     "@types/xml-parser": "^1.2.29",
     "download": "^6.2.5",
     "electron-compile": "^6.4.2",
@@ -64,8 +65,10 @@
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-hot-loader": "^3.0.0-beta.6",
+    "rmfr": "^2.0.0",
     "ts-fs-promise": "^1.0.4",
-    "tslib": "^1.4.0"
+    "tslib": "^1.4.0",
+    "winreg": "^1.2.4"
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",
