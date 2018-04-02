@@ -10,7 +10,8 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
-    "updaterTest": "ts-node ./src/updater/updaterTest.ts"
+    "updaterTest": "ts-node ./src/updater/updaterTest.ts",
+    "injectorTest": "ts-node ./src/updater/injectorTest.ts"
   },
   "keywords": [],
   "author": "Joseph Spearritt",
