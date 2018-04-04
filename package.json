@@ -11,7 +11,7 @@
     "publish": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
     "updaterTest": "ts-node ./src/updater/updaterTest.ts",
-    "injectorTest": "ts-node ./src/updater/injectorTest.ts"
+    "injectorTest": "ts-node ./src/injector/injectorTest.ts"
   },
   "keywords": [],
   "author": "Joseph Spearritt",
