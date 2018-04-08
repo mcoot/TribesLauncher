@@ -146,11 +146,11 @@ export default class TAModsUpdater {
         }
     }
 
-    public static async isUpdateRequired(channel: string): Promise<boolean> {
+    public static async isUpdateRequired(channel: string, baseDir: string): Promise<boolean> {
         if (!fs.existsSync(TAModsUpdater.versionFile)) {
             return true;
         } else {
-            return (await this.getUpdateList(channel)).length > 0;
+            return (await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`)).length > 0;
         }
     }
 

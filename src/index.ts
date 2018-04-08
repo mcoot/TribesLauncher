@@ -1,6 +1,19 @@
+import * as commandLineArgs from 'command-line-args';
+
 import { app, BrowserWindow } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
+
+import { LauncherConfig, generateTestConfig, loadLauncherConfig, saveLauncherConfig } from './launcher-config';
+import { InjectionResult, Injector } from './injector/injector';
+
+const allowedCliOptions: commandLineArgs.OptionDefinition[] = [
+  { name: 'inject', alias: 'i', type: Boolean },
+  { name: 'process', alias: 'p', type: String },
+  { name: 'dll', alias: 'd', type: String }
+];
+
+let launcherConfig: LauncherConfig | null = null;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,6 +26,21 @@ if (isDevMode) {
 }
 
 const createWindow = async () => {
+  // Parse command line options
+  const cliOptions = commandLineArgs(allowedCliOptions);
+
+  if ('inject' in cliOptions) {
+    if (!('process' in cliOptions) || !('dll' in cliOptions)) {
+      process.exit(InjectionResult.MISSING_ARGUMENTS);
+    } else {
+      const result: InjectionResult = await Injector.inject(cliOptions.process, cliOptions.dll);
+      process.exit(result);
+    }
+  }
+
+  // Load the app configuration
+  launcherConfig = await loadLauncherConfig(`${app.getPath('userData')}/launcherConfig.json`);
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
@@ -48,6 +76,14 @@ app.on('window-all-closed', () => {
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+});
+
+// When app is about to quit
+app.on('will-quit', () => {
+  // Save the launcher config
+  if (launcherConfig) {
+    saveLauncherConfig(launcherConfig, `${app.getPath('userData')}/launcherConfig.json`);
   }
 });
 

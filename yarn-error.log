@@ -1,14 +1,14 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add ffi
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js rebuild
 
 PATH: 
-  C:\Program Files\Haskell\bin;E:\Program Files\Haskell Platform\8.2.1\lib\extralibs\bin;E:\Program Files\Haskell Platform\8.2.1\bin;C:\Perl64\site\bin;C:\Perl64\bin;C:\Python36-32\Scripts\;C:\Python36-32\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files\SlikSvn\bin;C:\Program Files\Git\cmd;E:\Program Files\MiKTeX 2.9\miktex\bin\x64\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;E:\Program Files\Haskell Platform\8.2.1\mingw\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\ProgramData\chocolatey\bin;C:\Program Files\nodejs\;C:\Program Files (x86)\Yarn\bin\;C:\Users\joesp\AppData\Roaming\cabal\bin;C:\Users\joesp\AppData\Roaming\local\bin;C:\Users\joesp\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft VS Code\bin;C:\Users\joesp\AppData\Roaming\npm;C:\Users\joesp\AppData\Local\Yarn\bin
+  C:\ProgramData\Oracle\Java\javapath;C:\Program Files\Haskell\bin;C:\Program Files\Haskell Platform\8.0.2-a\lib\extralibs\bin;C:\Program Files\Haskell Platform\8.0.2-a\bin;C:\Program Files (x86)\Razer Chroma SDK\bin;C:\Program Files\Razer Chroma SDK\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;D:\Program Files\MiKTeX 2.9\miktex\bin\x64\;C:\Program Files\MATLAB\R2017b\bin;C:\Program Files\MATLAB\R2015b\runtime\win64;C:\Program Files\MATLAB\R2015b\bin;C:\Users\Joe\.dnx\bin;C:\Program Files\Microsoft DNX\Dnvm\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;D:\gradle-2.14.1\bin;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\apache-ant\apache-ant-1.9.7\bin\;C:\Program Files (x86)\Pandoc\;C:\Program Files\Git\cmd;C:\Program Files\Java\jdk1.8.0_74\bin;C:\Users\Joe\AppData\Local\Microsoft\WindowsApps;C:\Users\Joe\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\;C:\Program Files (x86)\Microsoft VS Code\bin;D:\jif\bin;C:\Program Files\Haskell Platform\8.0.2-a\mingw\bin;C:\Program Files\SlikSvn\bin;C:\Program Files\Java\jdk1.8.0_74\bin;C:\Program Files (x86)\Google\Cloud SDK\google-cloud-sdk\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Go\bin;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\ProgramData\chocolatey\bin;C:\Program Files\nodejs\;C:\Program Files (x86)\Yarn\bin\;C:\Users\Joe\AppData\Roaming\cabal\bin;C:\Users\Joe\AppData\Roaming\local\bin;C:\Users\Joe\AppData\Local\Microsoft\WindowsApps;C:\Users\Joe\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\;C:\Program Files (x86)\apache-ant\apache-ant-1.9.7\bin\;D:\jif\bin;D:\paragon\bin;C:\Users\Joe\AppData\Local\Programs\Python\Python36-32;C:\Users\Joe\AppData\Local\Programs\Python\Python36-32\Scripts;C:\Program Files\Microsoft VS Code\bin;C:\ffmpeg\bin;C:\Program Files (x86)\Nmap;C:\Users\Joe\AppData\Roaming\npm;C:\Users\Joe\AppData\Local\Yarn\bin
 
 Yarn version: 
   1.5.1
 
 Node version: 
-  9.10.0
+  9.11.1
 
 Platform: 
   win32 x64
@@ -27,7 +27,7 @@ npm manifest:
       "publish": "electron-forge publish",
       "lint": "tslint --project tsconfig.json --type-check --force",
       "updaterTest": "ts-node ./src/updater/updaterTest.ts",
-      "injectorTest": "ts-node ./src/updater/injectorTest.ts"
+      "injectorTest": "ts-node ./src/injector/injectorTest.ts"
     },
     "keywords": [],
     "author": "Joseph Spearritt",
@@ -65,6 +65,7 @@ npm manifest:
       }
     },
     "dependencies": {
+      "@types/command-line-args": "^4.0.2",
       "@types/download": "^6.2.2",
       "@types/electron-devtools-installer": "^2.0.2",
       "@types/fs-extra": "^5.0.1",
@@ -73,12 +74,16 @@ npm manifest:
       "@types/react-dom": "^0.14.20",
       "@types/winreg": "^1.2.30",
       "@types/xml-parser": "^1.2.29",
+      "command-line-args": "^5.0.2",
       "download": "^6.2.5",
       "electron-compile": "^6.4.2",
       "electron-devtools-installer": "^2.1.0",
       "electron-squirrel-startup": "^1.0.0",
       "fs-extra": "^5.0.0",
       "fs-promise": "^2.0.3",
+      "is-admin": "^2.1.1",
+      "jsonschema": "^1.2.4",
+      "node-dll-injector": "^0.1.0",
       "react": "^15.4.1",
       "react-dom": "^15.4.1",
       "react-hot-loader": "^3.0.0-beta.6",
@@ -147,6 +152,10 @@ Lockfile:
       vue-hot-reload-api "^2.0.1"
       vue-template-compiler "^2.0.0-alpha.8"
       vue-template-es2015-compiler "^1.4.2"
+  
+  "@types/command-line-args@^4.0.2":
+    version "4.0.2"
+    resolved "https://registry.yarnpkg.com/@types/command-line-args/-/command-line-args-4.0.2.tgz#bbb7568685bbcd9c69b46c9e6a3f6411890735c8"
   
   "@types/decompress@*":
     version "4.2.1"
@@ -349,6 +358,19 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/argparse/-/argparse-1.0.10.tgz#bcd6791ea5ae09725e17e5ad988134cd40b3d911"
     dependencies:
       sprintf-js "~1.0.2"
+  
+  argv-tools@^0.1.1:
+    version "0.1.1"
+    resolved "https://registry.yarnpkg.com/argv-tools/-/argv-tools-0.1.1.tgz#588283f3393ada47141440b12981cd41bf6b7032"
+    dependencies:
+      array-back "^2.0.0"
+      find-replace "^2.0.1"
+  
+  array-back@^2.0.0:
+    version "2.0.0"
+    resolved "https://registry.yarnpkg.com/array-back/-/array-back-2.0.0.tgz#6877471d51ecc9c9bfa6136fb6c7d5fe69748022"
+    dependencies:
+      typical "^2.6.1"
   
   array-buffer-from-string@^0.1.0:
     version "0.1.0"
@@ -1100,6 +1122,10 @@ Lockfile:
       buffers "~0.1.1"
       chainsaw "~0.1.0"
   
+  bindings@^1.3.0:
+    version "1.3.0"
+    resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.3.0.tgz#b346f6ecf6a95f5a815c5839fc7cdb22502f1ed7"
+  
   bl@^0.9.0:
     version "0.9.5"
     resolved "https://registry.yarnpkg.com/bl/-/bl-0.9.5.tgz#c06b797af085ea00bc527afc8efcf11de2232054"
@@ -1456,6 +1482,16 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.6.tgz#723e7df6e801ac5613113a7e445a9b69cb632818"
     dependencies:
       delayed-stream "~1.0.0"
+  
+  command-line-args@^5.0.2:
+    version "5.0.2"
+    resolved "https://registry.yarnpkg.com/command-line-args/-/command-line-args-5.0.2.tgz#c4e56b016636af1323cf485aa25c3cb203dfbbe4"
+    dependencies:
+      argv-tools "^0.1.1"
+      array-back "^2.0.0"
+      find-replace "^2.0.1"
+      lodash.camelcase "^4.3.0"
+      typical "^2.6.1"
   
   commander@2.8.x, commander@~2.8.1:
     version "2.8.1"
@@ -2428,6 +2464,18 @@ Lockfile:
       path-key "^1.0.0"
       strip-eof "^1.0.0"
   
+  execa@^0.6.1:
+    version "0.6.3"
+    resolved "https://registry.yarnpkg.com/execa/-/execa-0.6.3.tgz#57b69a594f081759c69e5370f0d17b9cb11658fe"
+    dependencies:
+      cross-spawn "^5.0.1"
+      get-stream "^3.0.0"
+      is-stream "^1.1.0"
+      npm-run-path "^2.0.0"
+      p-finally "^1.0.0"
+      signal-exit "^3.0.0"
+      strip-eof "^1.0.0"
+  
   execa@^0.7.0:
     version "0.7.0"
     resolved "https://registry.yarnpkg.com/execa/-/execa-0.7.0.tgz#944becd34cc41ee32a63a9faf27ad5a65fc59777"
@@ -2574,6 +2622,13 @@ Lockfile:
       filename-reserved-regex "^2.0.0"
       strip-outer "^1.0.0"
       trim-repeated "^1.0.0"
+  
+  find-replace@^2.0.1:
+    version "2.0.1"
+    resolved "https://registry.yarnpkg.com/find-replace/-/find-replace-2.0.1.tgz#6d9683a7ca20f8f9aabeabad07e4e2580f528550"
+    dependencies:
+      array-back "^2.0.0"
+      test-value "^3.0.0"
   
   find-up@^1.0.0:
     version "1.1.2"
@@ -3236,6 +3291,12 @@ Lockfile:
     version "2.1.0"
     resolved "https://registry.yarnpkg.com/is-absolute-url/-/is-absolute-url-2.1.0.tgz#50530dfb84fcc9aa7dbe7852e83a37b93b9f2aa6"
   
+  is-admin@^2.1.1:
+    version "2.1.1"
+    resolved "https://registry.yarnpkg.com/is-admin/-/is-admin-2.1.1.tgz#79869030ec02d2cbf8f8acb5705475c226394fba"
+    dependencies:
+      execa "^0.6.1"
+  
   is-array-buffer@^1.0.0:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/is-array-buffer/-/is-array-buffer-1.0.0.tgz#f32497a0509d109423f472003f98bab6a8ea34cb"
@@ -3524,6 +3585,10 @@ Lockfile:
     version "4.0.1"
     resolved "https://registry.yarnpkg.com/jsonpointer/-/jsonpointer-4.0.1.tgz#4fd92cb34e0e9db3c89c8622ecf51f9b978c6cb9"
   
+  jsonschema@^1.2.4:
+    version "1.2.4"
+    resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.4.tgz#a46bac5d3506a254465bc548876e267c6d0d6464"
+  
   jsprim@^1.2.2:
     version "1.4.1"
     resolved "https://registry.yarnpkg.com/jsprim/-/jsprim-1.4.1.tgz#313e66bc1e5cc06e438bc1b7499c2e5c56acb6a2"
@@ -3631,6 +3696,10 @@ Lockfile:
   lodash.assign@^4.0.3, lodash.assign@^4.0.6, lodash.assign@^4.2.0:
     version "4.2.0"
     resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
+  
+  lodash.camelcase@^4.3.0:
+    version "4.3.0"
+    resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
   
   lodash.defaults@^4.2.0:
     version "4.2.0"
@@ -3903,7 +3972,7 @@ Lockfile:
       object-assign "^4.0.1"
       thenify-all "^1.0.0"
   
-  nan@^2.3.2, nan@^2.4.0:
+  nan@^2.10.0, nan@^2.3.2, nan@^2.4.0:
     version "2.10.0"
     resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
   
@@ -3928,6 +3997,13 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-2.3.0.tgz#f3d554d6ac72a9ee16f0f4dc9548db7c08de4986"
     dependencies:
       semver "^5.4.1"
+  
+  node-dll-injector@^0.1.0:
+    version "0.1.0"
+    resolved "https://registry.yarnpkg.com/node-dll-injector/-/node-dll-injector-0.1.0.tgz#47a766caf140760a424d5bfd76a2c981b010b55c"
+    dependencies:
+      bindings "^1.3.0"
+      nan "^2.10.0"
   
   node-fetch@^1.0.1:
     version "1.7.3"
@@ -5476,6 +5552,13 @@ Lockfile:
       os-tmpdir "^1.0.0"
       rimraf "~2.2.6"
   
+  test-value@^3.0.0:
+    version "3.0.0"
+    resolved "https://registry.yarnpkg.com/test-value/-/test-value-3.0.0.tgz#9168c062fab11a86b8d444dd968bb4b73851ce92"
+    dependencies:
+      array-back "^2.0.0"
+      typical "^2.6.1"
+  
   thenify-all@^1.0.0, thenify-all@^1.6.0:
     version "1.6.0"
     resolved "https://registry.yarnpkg.com/thenify-all/-/thenify-all-1.6.0.tgz#1a1918d402d8fc3f98fbf234db0bcc8cc10e9726"
@@ -5673,6 +5756,10 @@ Lockfile:
   typescript@>=1.6, typescript@^2.8.1:
     version "2.8.1"
     resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.8.1.tgz#6160e4f8f195d5ba81d4876f9c0cc1fbc0820624"
+  
+  typical@^2.6.1:
+    version "2.6.1"
+    resolved "https://registry.yarnpkg.com/typical/-/typical-2.6.1.tgz#5c080e5d661cbbe38259d2e70a3c7253e873881d"
   
   ua-parser-js@^0.7.9:
     version "0.7.17"
@@ -6144,120 +6231,14 @@ Lockfile:
       readable-stream "~1.0.26"
 
 Trace: 
-  Error: E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi: Command failed.
-  Exit code: 1
-  Command: C:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c node-gyp rebuild
-  Directory: E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi
-  Output:
-  E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi>if not defined npm_config_node_gyp (node "C:\Program Files\nodejs\node_modules\npm\bin\node-gyp-bin\\..\..\node_modules\node-gyp\bin\node-gyp.js" rebuild )  else (node "" rebuild ) 
-  gyp info it worked if it ends with ok
-  gyp info using node-gyp@3.6.2
-  gyp info using node@9.10.0 | win32 | x64
-  gyp info spawn C:\Users\joesp\.windows-build-tools\python27\python.exe
-  gyp info spawn args [ 'C:\\Program Files\\nodejs\\node_modules\\npm\\node_modules\\node-gyp\\gyp\\gyp_main.py',
-  gyp info spawn args   'binding.gyp',
-  gyp info spawn args   '-f',
-  gyp info spawn args   'msvs',
-  gyp info spawn args   '-G',
-  gyp info spawn args   'msvs_version=2015',
-  gyp info spawn args   '-I',
-  gyp info spawn args   'E:\\UserFiles\\Documents\\Repos\\TribesLauncher\\node_modules\\ffi\\build\\config.gypi',
-  gyp info spawn args   '-I',
-  gyp info spawn args   'C:\\Program Files\\nodejs\\node_modules\\npm\\node_modules\\node-gyp\\addon.gypi',
-  gyp info spawn args   '-I',
-  gyp info spawn args   'C:\\Users\\joesp\\.node-gyp\\9.10.0\\include\\node\\common.gypi',
-  gyp info spawn args   '-Dlibrary=shared_library',
-  gyp info spawn args   '-Dvisibility=default',
-  gyp info spawn args   '-Dnode_root_dir=C:\\Users\\joesp\\.node-gyp\\9.10.0',
-  gyp info spawn args   '-Dnode_gyp_dir=C:\\Program Files\\nodejs\\node_modules\\npm\\node_modules\\node-gyp',
-  gyp info spawn args   '-Dnode_lib_file=C:\\Users\\joesp\\.node-gyp\\9.10.0\\<(target_arch)\\node.lib',
-  gyp info spawn args   '-Dmodule_root_dir=E:\\UserFiles\\Documents\\Repos\\TribesLauncher\\node_modules\\ffi',
-  gyp info spawn args   '-Dnode_engine=v8',
-  gyp info spawn args   '--depth=.',
-  gyp info spawn args   '--no-parallel',
-  gyp info spawn args   '--generator-output',
-  gyp info spawn args   'E:\\UserFiles\\Documents\\Repos\\TribesLauncher\\node_modules\\ffi\\build',
-  gyp info spawn args   '-Goutput_dir=.' ]
-  gyp info spawn C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe
-  gyp info spawn args [ 'build/binding.sln',
-  gyp info spawn args   '/clp:Verbosity=minimal',
-  gyp info spawn args   '/nologo',
-  gyp info spawn args   '/p:Configuration=Release;Platform=x64' ]
-  Building the projects in this solution one at a time. To enable parallel build, please add the "/m" switch.
-    Building assembly file ..\..\..\deps\libffi\src\x86\win64.asm
-     Assembling: ..\..\..\deps\libffi\src\x86\win64.asm
-    prep_cif.c
-    types.c
-    raw_api.c
-    java_raw_api.c
-    closures.c
-    ffi.c
-    win_delay_load_hook.cc
-    ffi.vcxproj -> E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\Release\\libffi.lib
-    ffi.cc
-    callback_info.cc
-    threaded_callback_invokation.cc
-    win32-dlfcn.cc
-    win_delay_load_hook.cc
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\callback_info.cc(63): warning C4996: 'Nan::Callback::Call': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan.h(1618): note: see declaration of 'Nan::Callback::Call'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\callback_info.cc(73): warning C4996: 'Nan::Callback::Call': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan.h(1618): note: see declaration of 'Nan::Callback::Call'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\callback_info.cc(78): warning C4996: 'Nan::Callback::Call': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan.h(1618): note: see declaration of 'Nan::Callback::Call'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(111): error C2664: 'v8::Maybe<bool> v8::Object::ForceSet(v8::Local<v8::Context>,v8::Local<v8::Value>,v8::Local<v8::Value>,v8::PropertyAttribute)': cannot convert argument 3 from 'v8::PropertyAttribute' to 'v8::Local<v8::Value>' [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(111): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(114): error C2664: 'v8::Maybe<bool> v8::Object::ForceSet(v8::Local<v8::Context>,v8::Local<v8::Value>,v8::Local<v8::Value>,v8::PropertyAttribute)': cannot convert argument 3 from 'v8::PropertyAttribute' to 'v8::Local<v8::Value>' [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(114): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(123): error C2664: 'v8::Maybe<bool> v8::Object::ForceSet(v8::Local<v8::Context>,v8::Local<v8::Value>,v8::Local<v8::Value>,v8::PropertyAttribute)': cannot convert argument 3 from 'v8::PropertyAttribute' to 'v8::Local<v8::Value>' [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(123): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(124): error C2664: 'v8::Maybe<bool> v8::Object::ForceSet(v8::Local<v8::Context>,v8::Local<v8::Value>,v8::Local<v8::Value>,v8::PropertyAttribute)': cannot convert argument 3 from 'v8::PropertyAttribute' to 'v8::Local<v8::Value>' [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(124): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(125): error C2664: 'v8::Maybe<bool> v8::Object::ForceSet(v8::Local<v8::Context>,v8::Local<v8::Value>,v8::Local<v8::Value>,v8::PropertyAttribute)': cannot convert argument 3 from 'v8::PropertyAttribute' to 'v8::Local<v8::Value>' [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(125): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(126): error C2664: 'v8::Maybe<bool> v8::Object::ForceSet(v8::Local<v8::Context>,v8::Local<v8::Value>,v8::Local<v8::Value>,v8::PropertyAttribute)': cannot convert argument 3 from 'v8::PropertyAttribute' to 'v8::Local<v8::Value>' [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(126): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(132): error C2664: 'v8::Maybe<bool> v8::Object::ForceSet(v8::Local<v8::Context>,v8::Local<v8::Value>,v8::Local<v8::Value>,v8::PropertyAttribute)': cannot convert argument 3 from 'v8::PropertyAttribute' to 'v8::Local<v8::Value>' [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(132): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(58): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(59): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(60): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(63): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(64): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(65): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(78): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(88): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(91): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(94): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(97): warning C4996: 'Nan::ForceSet': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan_maybe_43_inl.h(130): note: see declaration of 'Nan::ForceSet'
-  e:\userfiles\documents\repos\tribeslauncher\node_modules\ffi\src\ffi.cc(367): warning C4996: 'Nan::Callback::Call': was declared deprecated [E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi\build\ffi_bindings.vcxproj]
-    e:\userfiles\documents\repos\tribeslauncher\node_modules\nan\nan.h(1618): note: see declaration of 'Nan::Callback::Call'
-  gyp ERR! build error 
-  gyp ERR! stack Error: `C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe` failed with exit code: 1
-  gyp ERR! stack     at ChildProcess.onExit (C:\Program Files\nodejs\node_modules\npm\node_modules\node-gyp\lib\build.js:258:23)
-  gyp ERR! stack     at ChildProcess.emit (events.js:180:13)
-  gyp ERR! stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:209:12)
-  gyp ERR! System Windows_NT 10.0.16299
-  gyp ERR! command "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\node_modules\\node-gyp\\bin\\node-gyp.js" "rebuild"
-  gyp ERR! cwd E:\UserFiles\Documents\Repos\TribesLauncher\node_modules\ffi
-  gyp ERR! node -v v9.10.0
-  gyp ERR! node-gyp -v v3.6.2
-  gyp ERR! not ok
-      at ProcessTermError.MessageError (C:\Program Files (x86)\Yarn\lib\cli.js:186:110)
-      at new ProcessTermError (C:\Program Files (x86)\Yarn\lib\cli.js:226:113)
-      at ChildProcess.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:30281:17)
-      at ChildProcess.emit (events.js:180:13)
-      at maybeClose (internal/child_process.js:936:16)
-      at Process.ChildProcess._handle.onexit (internal/child_process.js:220:5)
+  Error: Command "rebuild" not found.
+      at new MessageError (C:\Program Files (x86)\Yarn\lib\cli.js:186:110)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:87307:17
+      at Generator.next (<anonymous>)
+      at step (C:\Program Files (x86)\Yarn\lib\cli.js:98:30)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:116:14
+      at new Promise (<anonymous>)
+      at new F (C:\Program Files (x86)\Yarn\lib\cli.js:23451:28)
+      at C:\Program Files (x86)\Yarn\lib\cli.js:95:12
+      at runCommand (C:\Program Files (x86)\Yarn\lib\cli.js:87312:22)
+      at Object.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:87412:14)
