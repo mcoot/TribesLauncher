@@ -11,8 +11,8 @@ An attempt at reimplementing TAMods launcher with Typescript and Electron
 
 4. Install `electron-forge`
 
-5. To run the application, `electron-forge start`
+5. To run the application, `electron-forge start`. Note that injection will not work when run in this dev mode!
 
 6. Tests for various components exist as npm scripts - e.g. `yarn updaterTest` and `yarn injectorTest`
 
-The C++ injector itself located under `./injector` contains a VS2017 solution which can be loaded and should deal with the build process for that.
+7. To build the application package, run `electron-forge package --platform=win32` (injection should work with the build executable)
