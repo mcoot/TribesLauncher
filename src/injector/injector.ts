@@ -12,7 +12,29 @@ export enum InjectionResult {
     PROCESS_NOT_RUNNING,
     DLL_DOES_NOT_EXIST,
     INSUFFICIENT_PRIVILEGE,
-    INJECTION_FAILED
+    INJECTION_FAILED,
+    UNKNOWN_ERROR
+};
+
+export function injectionResultText(result: InjectionResult) {
+    switch (result) {
+        case InjectionResult.SUCCESSFUL:
+            return 'injection succeeded';
+        case InjectionResult.MISSING_ARGUMENTS:
+            return 'required injection arguments not supplied';
+        case InjectionResult.PROCESS_NOT_RUNNING:
+            return 'process is not running';
+        case InjectionResult.DLL_DOES_NOT_EXIST:
+            return 'could not find DLL file';
+        case InjectionResult.INSUFFICIENT_PRIVILEGE:
+            return 'injection requires administrator privileges';
+        case InjectionResult.INJECTION_FAILED:
+            return 'injection failed due to an unknown error';
+        case InjectionResult.UNKNOWN_ERROR:
+            return 'an unknown error occurred';
+        default:
+            return '';
+    }
 };
 
 export class Injector {
@@ -31,7 +53,7 @@ export class Injector {
         return args;
     }
 
-    public static startProcess(config: LauncherConfig) {
+    public static startProcess(config: LauncherConfig): void {
         // Start the child properly detached
         // i.e. don't connect stdio, unref() to remove from node's reference counter
         const child = spawn(config.mainExecutablePath, this.generateExecutableArgs(config), {

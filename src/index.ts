@@ -1,10 +1,9 @@
 import * as commandLineArgs from 'command-line-args';
 
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
 
-import { LauncherConfig, generateTestConfig, loadLauncherConfig, saveLauncherConfig } from './launcher-config';
 import { InjectionResult, Injector } from './injector/injector';
 
 const allowedCliOptions: commandLineArgs.OptionDefinition[] = [
@@ -13,10 +12,11 @@ const allowedCliOptions: commandLineArgs.OptionDefinition[] = [
   { name: 'dll', alias: 'd', type: String }
 ];
 
-let launcherConfig: LauncherConfig | null = null;
+// let launcherConfig: LauncherConfig | null = null;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
+
 let mainWindow: Electron.BrowserWindow | null = null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
@@ -27,7 +27,15 @@ if (isDevMode) {
 
 const createWindow = async () => {
   // Parse command line options
-  const cliOptions = commandLineArgs(allowedCliOptions);
+  let cliOptions;
+  try {
+    cliOptions = commandLineArgs(allowedCliOptions);
+  } catch (err) {
+    console.error(`Failed to parse command line arguments: ${err}`);
+    process.exit(InjectionResult.UNKNOWN_ERROR);
+  }
+
+  console.log(cliOptions);
 
   if ('inject' in cliOptions) {
     if (!('process' in cliOptions) || !('dll' in cliOptions)) {
@@ -39,7 +47,7 @@ const createWindow = async () => {
   }
 
   // Load the app configuration
-  launcherConfig = await loadLauncherConfig(`${app.getPath('userData')}/launcherConfig.json`);
+  // launcherConfig = await loadLauncherConfig(`${app.getPath('userData')}/launcherConfig.json`);
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -47,11 +55,22 @@ const createWindow = async () => {
     height: 600,
   });
 
+  // Pass the config path to the renderer process
+  // because can't get the userData path from the render process :'(
+  // Also, have to stop ts from complaining about adding an extra field
+  // @ts-ignore
+  mainWindow.launcherConfigPath = `${app.getPath('userData')}/launcherConfig.json`;
+
+  // Also pass in argv - need to know how the main process was started
+  // so that it can be started in injection mode on button press
+  // @ts-ignore
+  mainWindow.mainProcessArgv = process.argv;
+
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
-  if (isDevMode) {
+  if (isDevMode || true) {
     await installExtension(REACT_DEVELOPER_TOOLS);
     mainWindow.webContents.openDevTools();
   }
@@ -82,9 +101,9 @@ app.on('window-all-closed', () => {
 // When app is about to quit
 app.on('will-quit', () => {
   // Save the launcher config
-  if (launcherConfig) {
-    saveLauncherConfig(launcherConfig, `${app.getPath('userData')}/launcherConfig.json`);
-  }
+  // if (launcherConfig) {
+  //   saveLauncherConfig(launcherConfig, `${app.getPath('userData')}/launcherConfig.json`);
+  // }
 });
 
 app.on('activate', () => {

@@ -88,3 +88,8 @@ export const saveLauncherConfig = async (config: LauncherConfig, filePath: strin
     const contents = JSON.stringify(config, null, 4);
     await fs.writeFile(filePath, contents);
 };
+
+export const saveLauncherConfigSync = (config: LauncherConfig, filePath: string): void  => {
+    const contents = JSON.stringify(config, null, 4);
+    fs.writeFileSync(filePath, contents);
+}
