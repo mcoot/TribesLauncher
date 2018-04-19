@@ -1,8 +1,8 @@
 import * as fs from 'fs-extra';
 const rmfr = require('rmfr');
-import * as os from 'os';
 import * as download from 'download';
 import * as Registry from 'winreg';
+import { BrowserWindow } from 'electron';
 
 const xml2js = require('xml2js');
 
@@ -131,7 +131,7 @@ export default class TAModsUpdater {
         }
 
         // Get the local manifest, if there is one
-        if (fs.existsSync(TAModsUpdater.versionFile)) {
+        if (fs.existsSync(localManifestFile)) {
             const localManifest = await this.parseVersionManifestFile(localManifestFile);
 
             if (!localManifest.channels.has(channel)) {
@@ -147,18 +147,22 @@ export default class TAModsUpdater {
     }
 
     public static async isUpdateRequired(channel: string, baseDir: string): Promise<boolean> {
-        if (!fs.existsSync(TAModsUpdater.versionFile)) {
+        if (!fs.existsSync(`${baseDir}/${this.versionFile}`)) {
             return true;
         } else {
             return (await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`)).length > 0;
         }
     }
 
-    private static async downloadFile(file: TAModsFile, baseDir: string): Promise<void> {
+    private static async downloadFile(file: TAModsFile, baseDir: string, ipcWindow: BrowserWindow | null = null): Promise<void> {
         let localPathArr = file.path.split(/[\/\\]/);
         localPathArr.pop();
         const localPath = localPathArr.join('/');
         await download(`${this.baseUrl}/${file.path}`, `${baseDir}/${localPath}`);
+        if (ipcWindow) {
+            // Send a tick indicating a file has downloaded
+            ipcWindow.webContents.send('update-tick', ['file-finished', file.path]);
+        }
     }
 
     private static async regKeyValuesPromise(regKey: Registry.Registry): Promise<Registry.RegistryItem[]> {
@@ -187,12 +191,18 @@ export default class TAModsUpdater {
         return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
     }
 
-    public static async update(channel: string, baseDir: string, downloadSync: boolean = false): Promise<void> {
+    public static async update(channel: string, baseDir: string, downloadSync: boolean = false, ipcWindow: BrowserWindow | null = null): Promise<void> {
+
         const updateList = await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`);
 
         // Don't update if not required
         if (updateList.length == 0) {
             return;
+        }
+
+        // If sending event ticks, send the total number of files
+        if (ipcWindow) {
+            ipcWindow.webContents.send('update-tick', ['total-files', updateList.length]);
         }
 
         // Setup temporary download directory, clearing it out if files are already there\
@@ -207,11 +217,11 @@ export default class TAModsUpdater {
         if (downloadSync) {
             // Download in sequence
             for (const file of updateList) {
-                await this.downloadFile(file, `${baseDir}/tmp`);
+                await this.downloadFile(file, `${baseDir}/tmp`, ipcWindow);
             }
         } else {
             // Download asynchronously
-            await Promise.all(updateList.map(f => this.downloadFile(f, `${baseDir}/tmp`)));
+            await Promise.all(updateList.map(f => this.downloadFile(f, `${baseDir}/tmp`, ipcWindow)));
         }
         
 

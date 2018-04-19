@@ -5,6 +5,7 @@ import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-insta
 import { enableLiveReload } from 'electron-compile';
 
 import { InjectionResult, Injector } from './injector/injector';
+import TAModsUpdater from './updater/updater';
 
 const allowedCliOptions: commandLineArgs.OptionDefinition[] = [
   { name: 'inject', alias: 'i', type: Boolean },
@@ -35,8 +36,6 @@ const createWindow = async () => {
     process.exit(InjectionResult.UNKNOWN_ERROR);
   }
 
-  console.log(cliOptions);
-
   if ('inject' in cliOptions) {
     if (!('process' in cliOptions) || !('dll' in cliOptions)) {
       process.exit(InjectionResult.MISSING_ARGUMENTS);
@@ -59,7 +58,7 @@ const createWindow = async () => {
   // because can't get the userData path from the render process :'(
   // Also, have to stop ts from complaining about adding an extra field
   // @ts-ignore
-  mainWindow.launcherConfigPath = `${app.getPath('userData')}/launcherConfig.json`;
+  mainWindow.userDataPath = app.getPath('userData');
 
   // Also pass in argv - need to know how the main process was started
   // so that it can be started in injection mode on button press
@@ -74,6 +73,22 @@ const createWindow = async () => {
     await installExtension(REACT_DEVELOPER_TOOLS);
     mainWindow.webContents.openDevTools();
   }
+
+  // ipcMain.on('memes', (event: any, args: any[]) => {
+  //   console.log(`EVENT: ${event} | ARGS: ${args}`);
+  //   event.sender.send('memeos', ['squid', 'fish', [1,2,3]]);
+  // })
+  // ipcMain.on('update-check-start-request', (event: any, args: any) => {
+  ipcMain.on('update-check-start-request', async (event: any, args: any) => {
+    const result = await TAModsUpdater.isUpdateRequired(args[0], args[1]).catch(err => false);
+    event.sender.send('update-check-finished-request', result);
+  });
+
+
+  ipcMain.on('update-start-request', async (event: any, args: any) => {
+    await TAModsUpdater.update(args[0], args[1], false, mainWindow);
+    event.sender.send('update-finished-request');
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {

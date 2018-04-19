@@ -23,6 +23,9 @@ const launcherConfigSchema = {
         },
         "masterServerHost": {
             "type": "string"
+        },
+        "releaseChannel": {
+            "type": "string"
         }
     }
 };
@@ -40,6 +43,8 @@ export interface LauncherConfig {
     useDefaultExecutableArgs: boolean;
     // The master / login server to use for T:A
     masterServerHost: string;
+
+    releaseChannel: string;
 }
 
 export const generateDefaultConfig = (): LauncherConfig => {
@@ -49,7 +54,8 @@ export const generateDefaultConfig = (): LauncherConfig => {
         customExecutableArgs: [],
         runningProcessName: 'tribesascend.exe',
         dllPath: 'tamods.dll',
-        masterServerHost: '45.33.99.115'
+        masterServerHost: '45.33.99.115',
+        releaseChannel: 'stable'
     };
 };
 
