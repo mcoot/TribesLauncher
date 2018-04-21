@@ -47,13 +47,13 @@ export interface LauncherConfig {
     releaseChannel: string;
 }
 
-export const generateDefaultConfig = (): LauncherConfig => {
+export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfig => {
     return {
         mainExecutablePath: 'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Tribes\\Binaries\\Win32\\TribesAscend.exe',
         useDefaultExecutableArgs: true,
         customExecutableArgs: [],
         runningProcessName: 'tribesascend.exe',
-        dllPath: 'tamods.dll',
+        dllPath: `${userDataPath}/tamods.dll`,
         masterServerHost: '45.33.99.115',
         releaseChannel: 'stable'
     };
@@ -82,11 +82,11 @@ const loadLauncherConfigFromFile = async (filePath: string): Promise<LauncherCon
     return launcherJson;
 };
 
-export const loadLauncherConfig = async(filePath: string): Promise<LauncherConfig> => {
+export const loadLauncherConfig = async(filePath: string, userDataPath: string = '.'): Promise<LauncherConfig> => {
     if (fs.existsSync(filePath)) {
         return await loadLauncherConfigFromFile(filePath);
     } else {
-        return generateDefaultConfig();
+        return generateDefaultConfig(userDataPath);
     }
 };
 

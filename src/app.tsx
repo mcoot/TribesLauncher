@@ -42,7 +42,7 @@ export class App extends React.Component<AppProps, AppState> {
   async componentDidMount() {
     window.addEventListener('beforeunload', this.componentCleanup);
     if (this.props.userDataPath) {
-      const loadedConfig = await loadLauncherConfig(`${this.props.userDataPath}/launcherConfig.json`);
+      const loadedConfig = await loadLauncherConfig(`${this.props.userDataPath}/launcherConfig.json`, this.props.userDataPath);
       this.setState((s) => ({
         config: loadedConfig,
         launcherState: s.launcherState,
