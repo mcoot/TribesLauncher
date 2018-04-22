@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync } from './launcher-config';
+import { LauncherNews } from './launcher-news';
 import { LauncherButton } from './components/launcherButton';
 import { InjectionResult, injectionResultText } from './injector/injector';
 import { ipcRenderer } from 'electron';
@@ -25,6 +26,7 @@ export interface AppState {
   launcherState: LauncherState;
   progressbarTotal: number;
   progressbarDone: number;
+  news: LauncherNews | null
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -35,19 +37,22 @@ export class App extends React.Component<AppProps, AppState> {
       config: generateDefaultConfig(),
       launcherState: LauncherState.READY_TO_LAUNCH,
       progressbarTotal: 0,
-      progressbarDone: 0
+      progressbarDone: 0,
+      news: null
     }
   }
 
   async componentDidMount() {
     window.addEventListener('beforeunload', this.componentCleanup);
     if (this.props.userDataPath) {
+      // Load config
       const loadedConfig = await loadLauncherConfig(`${this.props.userDataPath}/launcherConfig.json`, this.props.userDataPath);
       this.setState((s) => ({
         config: loadedConfig,
         launcherState: s.launcherState,
         progressbarTotal: s.progressbarTotal,
-        progressbarDone: s.progressbarDone
+        progressbarDone: s.progressbarDone,
+        news: s.news
       }));
 
       ipcRenderer.on('update-check-finished-request', this.handleUpdateComplete);
@@ -59,8 +64,12 @@ export class App extends React.Component<AppProps, AppState> {
         if (this.props.userDataPath) {
           installPath = this.props.userDataPath;
         }
-        ipcRenderer.send('update-check-start-request', [this.state.config.releaseChannel, installPath]);
+        ipcRenderer.send('update-check-start-request', [this.state.config.releaseChannel, installPath, this.state.config.updateUrl]);
       }
+
+      // Retrieve news
+      ipcRenderer.on('news-retrieved', this.handleNewsRetrieved);
+      ipcRenderer.send('news-request', `${this.state.config.updateUrl}/news.json`);
     }
   }
 
@@ -69,6 +78,7 @@ export class App extends React.Component<AppProps, AppState> {
       saveLauncherConfigSync(this.state.config, `${this.props.userDataPath}/launcherConfig.json`);
       ipcRenderer.removeAllListeners('update-check-finished-request');
       ipcRenderer.removeAllListeners('update-tick');
+      ipcRenderer.removeAllListeners('news-retrieved');
     }
   }
 
@@ -83,7 +93,8 @@ export class App extends React.Component<AppProps, AppState> {
         config: s.config,
         launcherState: LauncherState.NEEDS_UPDATE,
         progressbarTotal: 0,
-        progressbarDone: 0
+        progressbarDone: 0,
+        news: s.news
       }));
     }
   }
@@ -98,7 +109,8 @@ export class App extends React.Component<AppProps, AppState> {
           config: s.config,
           launcherState: s.launcherState,
           progressbarTotal: totalFiles,
-          progressbarDone: s.progressbarDone
+          progressbarDone: s.progressbarDone,
+          news: s.news
         }));
         break;
       case 'file-finished':
@@ -107,9 +119,22 @@ export class App extends React.Component<AppProps, AppState> {
           config: s.config,
           launcherState: s.launcherState,
           progressbarTotal: s.progressbarTotal,
-          progressbarDone: s.progressbarDone + 1
+          progressbarDone: s.progressbarDone + 1,
+          news: s.news
         }));
         break;
+    }
+  }
+
+  handleNewsRetrieved = async (event: any, args: [boolean, any]) => {
+    if (args[0] && args[1]) {
+      this.setState((s) => ({
+        config: s.config,
+        launcherState: s.launcherState,
+        progressbarDone: s.progressbarDone,
+        progressbarTotal: s.progressbarTotal,
+        news: args[1]
+      }));
     }
   }
 
@@ -118,7 +143,8 @@ export class App extends React.Component<AppProps, AppState> {
       config: s.config,
       launcherState: LauncherState.LAUNCHED,
       progressbarTotal: s.progressbarTotal,
-        progressbarDone: s.progressbarDone
+        progressbarDone: s.progressbarDone,
+        news: s.news
     }));
   }
 
@@ -130,7 +156,8 @@ export class App extends React.Component<AppProps, AppState> {
             config: s.config,
             launcherState: LauncherState.LAUNCHED,
             progressbarTotal: s.progressbarTotal,
-              progressbarDone: s.progressbarDone
+            progressbarDone: s.progressbarDone,
+            news: s.news
           }));
         }
         break;
@@ -141,7 +168,8 @@ export class App extends React.Component<AppProps, AppState> {
             config: s.config,
             launcherState: LauncherState.READY_TO_LAUNCH,
             progressbarTotal: s.progressbarTotal,
-            progressbarDone: s.progressbarDone
+            progressbarDone: s.progressbarDone,
+            news: s.news
           }));
         }
         break;
@@ -154,7 +182,8 @@ export class App extends React.Component<AppProps, AppState> {
         config: s.config,
         launcherState: LauncherState.INJECTED,
         progressbarTotal: s.progressbarTotal,
-        progressbarDone: s.progressbarDone
+        progressbarDone: s.progressbarDone,
+        news: s.news
       }));
     } else {
       window.alert(`Injection failed with error message: ${injectionResultText(result)}.`);
@@ -166,7 +195,8 @@ export class App extends React.Component<AppProps, AppState> {
       config: s.config,
       launcherState: LauncherState.UPDATING,
       progressbarTotal: 0,
-      progressbarDone: 0
+      progressbarDone: 0,
+      news: s.news
     }));
   }
 
@@ -175,7 +205,8 @@ export class App extends React.Component<AppProps, AppState> {
       config: s.config,
       launcherState: LauncherState.READY_TO_LAUNCH,
       progressbarTotal: s.progressbarTotal,
-      progressbarDone: s.progressbarTotal
+      progressbarDone: s.progressbarTotal,
+      news: s.news
     }));
   }
 

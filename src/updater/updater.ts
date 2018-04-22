@@ -70,7 +70,6 @@ class VersionManifest {
 export default class TAModsUpdater {
 
     private static readonly versionFile: string = 'version.xml';
-    private static readonly baseUrl: string = 'https://raw.githubusercontent.com/josephspearritt/tamodsupdate/release';
 
     private static parseXmlPromise(parser: any, data: string): Promise<any> {
         return new Promise((res, rej) => {
@@ -121,9 +120,9 @@ export default class TAModsUpdater {
         return this.parseVersionManifest(data);
     }
 
-    private static async getUpdateList(channel: string, localManifestFile: string): Promise<TAModsFile[]> {
+    private static async getUpdateList(channel: string, localManifestFile: string, updateUrl: string): Promise<TAModsFile[]> {
         // Get the remote manifest
-        const remoteManifestData = await download(`${TAModsUpdater.baseUrl}/${TAModsUpdater.versionFile}`);
+        const remoteManifestData = await download(`${updateUrl}/${TAModsUpdater.versionFile}`);
         const remoteManifest = await this.parseVersionManifest(remoteManifestData.toString('utf8'));
 
         if (!remoteManifest.channels.has(channel)) {
@@ -146,19 +145,19 @@ export default class TAModsUpdater {
         }
     }
 
-    public static async isUpdateRequired(channel: string, baseDir: string): Promise<boolean> {
+    public static async isUpdateRequired(channel: string, baseDir: string, updateUrl: string): Promise<boolean> {
         if (!fs.existsSync(`${baseDir}/${this.versionFile}`)) {
             return true;
         } else {
-            return (await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`)).length > 0;
+            return (await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`, updateUrl)).length > 0;
         }
     }
 
-    private static async downloadFile(file: TAModsFile, baseDir: string, ipcWindow: BrowserWindow | null = null): Promise<void> {
+    private static async downloadFile(file: TAModsFile, baseDir: string, updateUrl: string, ipcWindow: BrowserWindow | null = null): Promise<void> {
         let localPathArr = file.path.split(/[\/\\]/);
         localPathArr.pop();
         const localPath = localPathArr.join('/');
-        await download(`${this.baseUrl}/${file.path}`, `${baseDir}/${localPath}`);
+        await download(`${updateUrl}/${file.path}`, `${baseDir}/${localPath}`);
         if (ipcWindow) {
             // Send a tick indicating a file has downloaded
             ipcWindow.webContents.send('update-tick', ['file-finished', file.path]);
@@ -191,9 +190,9 @@ export default class TAModsUpdater {
         return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
     }
 
-    public static async update(channel: string, baseDir: string, downloadSync: boolean = false, ipcWindow: BrowserWindow | null = null): Promise<void> {
+    public static async update(channel: string, baseDir: string, downloadSync: boolean = false, updateUrl: string, ipcWindow: BrowserWindow | null = null): Promise<void> {
 
-        const updateList = await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`);
+        const updateList = await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`, updateUrl);
 
         // Don't update if not required
         if (updateList.length == 0) {
@@ -212,16 +211,16 @@ export default class TAModsUpdater {
         await fs.mkdirp(`${baseDir}/tmp`);
 
         // Redownload the version manifest
-        await download(`${this.baseUrl}/${this.versionFile}`, `${baseDir}/tmp`);
+        await download(`${updateUrl}/${this.versionFile}`, `${baseDir}/tmp`);
 
         if (downloadSync) {
             // Download in sequence
             for (const file of updateList) {
-                await this.downloadFile(file, `${baseDir}/tmp`, ipcWindow);
+                await this.downloadFile(file, `${baseDir}/tmp`, updateUrl, ipcWindow);
             }
         } else {
             // Download asynchronously
-            await Promise.all(updateList.map(f => this.downloadFile(f, `${baseDir}/tmp`, ipcWindow)));
+            await Promise.all(updateList.map(f => this.downloadFile(f, `${baseDir}/tmp`, updateUrl, ipcWindow)));
         }
         
 

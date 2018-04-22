@@ -15,4 +15,4 @@ An attempt at reimplementing TAMods launcher with Typescript and Electron
 
 6. Tests for various components exist as npm scripts - e.g. `yarn updaterTest` and `yarn injectorTest`
 
-7. To build the application package, run `electron-forge package --platform=win32` (injection should work with the build executable)
+7. To build the application package, run `electron-forge package --platform=win32 --arch=ia32`. Note that it needs to be built as a 32-bit application for injection to succeed (since T:A is 32-bit).

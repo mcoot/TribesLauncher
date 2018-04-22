@@ -26,6 +26,9 @@ const launcherConfigSchema = {
         },
         "releaseChannel": {
             "type": "string"
+        },
+        "updateUrl": {
+            "type": "string"
         }
     }
 };
@@ -45,6 +48,9 @@ export interface LauncherConfig {
     masterServerHost: string;
 
     releaseChannel: string;
+
+    // Base URL to retrieve launcher updates from
+    updateUrl: string;
 }
 
 export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfig => {
@@ -55,7 +61,8 @@ export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfi
         runningProcessName: 'TribesAscend.exe',
         dllPath: `${userDataPath}/tamods.dll`,
         masterServerHost: '45.33.99.115',
-        releaseChannel: 'stable'
+        releaseChannel: 'stable',
+        updateUrl: 'https://raw.githubusercontent.com/mcoot/tamodsupdate/release'
     };
 };
 
@@ -83,11 +90,16 @@ const loadLauncherConfigFromFile = async (filePath: string): Promise<LauncherCon
 };
 
 export const loadLauncherConfig = async(filePath: string, userDataPath: string = '.'): Promise<LauncherConfig> => {
+    let config = generateDefaultConfig(userDataPath);
+
     if (fs.existsSync(filePath)) {
-        return await loadLauncherConfigFromFile(filePath);
-    } else {
-        return generateDefaultConfig(userDataPath);
+        const loadedConfig = await loadLauncherConfigFromFile(filePath);
+        for (const key in loadedConfig) {
+            config[key] = loadedConfig[key];
+        }
     }
+
+    return config;
 };
 
 export const saveLauncherConfig = async (config: LauncherConfig, filePath: string): Promise<void> => {

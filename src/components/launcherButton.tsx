@@ -75,7 +75,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
                     installPath = '.';
                 }
                 this.props.onUpdateStart();
-                ipcRenderer.send('update-start-request', [this.props.config.releaseChannel, installPath]);
+                ipcRenderer.send('update-start-request', [this.props.config.releaseChannel, installPath, this.props.config.updateUrl]);
                 break;
         }
     }

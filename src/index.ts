@@ -6,6 +6,7 @@ import { enableLiveReload } from 'electron-compile';
 
 import { InjectionResult, Injector } from './injector/injector';
 import TAModsUpdater from './updater/updater';
+import { downloadLauncherNews } from './launcher-news';
 
 const allowedCliOptions: commandLineArgs.OptionDefinition[] = [
   { name: 'inject', alias: 'i', type: Boolean },
@@ -76,20 +77,26 @@ const createWindow = async () => {
     mainWindow.webContents.openDevTools();
   }
 
-  // ipcMain.on('memes', (event: any, args: any[]) => {
-  //   console.log(`EVENT: ${event} | ARGS: ${args}`);
-  //   event.sender.send('memeos', ['squid', 'fish', [1,2,3]]);
-  // })
-  // ipcMain.on('update-check-start-request', (event: any, args: any) => {
   ipcMain.on('update-check-start-request', async (event: any, args: any) => {
-    const result = await TAModsUpdater.isUpdateRequired(args[0], args[1]).catch(err => false);
+    const result = await TAModsUpdater.isUpdateRequired(args[0], args[1], args[2]).catch(err => false);
     event.sender.send('update-check-finished-request', result);
   });
 
 
   ipcMain.on('update-start-request', async (event: any, args: any) => {
-    await TAModsUpdater.update(args[0], args[1], false, mainWindow);
+    await TAModsUpdater.update(args[0], args[1], false, args[2], mainWindow);
     event.sender.send('update-finished-request');
+  });
+
+  ipcMain.on('news-request', async (event: any, newsUrl: string) => {
+    let result;
+    try {
+      result = await downloadLauncherNews(newsUrl);
+    } catch (err) {
+      event.sender.send('news-retrieved', [false, err]);
+      return;
+    }
+    event.sender.send('news-retrieved', [true, result]);
   });
 
   // Emitted when the window is closed.
