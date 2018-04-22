@@ -3,12 +3,14 @@ import * as download from 'download';
 /////// Community Items
 
 export interface CommunityDiscord {
+    id: number;
     kind: "discord";
     name: string;
     serverId: string;
 }
 
 export interface CommunityMumble {
+    id: number;
     kind: "mumble";
     name: string;
     url: string;
@@ -16,6 +18,7 @@ export interface CommunityMumble {
 }
 
 export interface CommunityReddit {
+    id: number;
     kind: "reddit";
     name: string;
     sub: string;
@@ -26,6 +29,7 @@ export type CommunityItem = CommunityDiscord | CommunityMumble | CommunityReddit
 /////// News
 
 export interface NewsItem {
+    id: number;
     title: string;
     date: string;
     body: string;

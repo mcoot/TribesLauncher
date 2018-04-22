@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
+    "package": "electron-forge package --platform=win32 --arch=ia32",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
@@ -75,11 +75,13 @@
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-hot-loader": "^3.0.0-beta.6",
+    "react-markdown": "^3.3.0",
     "react-progressbar.js": "^0.2.0",
     "rmfr": "^2.0.0",
     "runas": "^3.1.1",
     "ts-fs-promise": "^1.0.4",
     "tslib": "^1.4.0",
+    "typed-react-markdown": "^0.1.0",
     "winreg": "^1.2.4",
     "xml2js": "^0.4.19"
   },

@@ -5,6 +5,7 @@ import { LauncherNews } from './launcher-news';
 import { LauncherButton } from './components/launcherButton';
 import { InjectionResult, injectionResultText } from './injector/injector';
 import { ipcRenderer } from 'electron';
+import { NewsDisplay } from './components/newsDisplay';
 
 const ProgressBar = require('react-progressbar.js');
 
@@ -211,22 +212,13 @@ export class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-    const containerStyle = {
-      width: '200px',
-      height: '200px'
-    };
 
-    const options = {
+    const progressBarOptions = {
       strokeWidth: 2,
-      color: '#00FF00',
-      text: {
-        value: 'beanios',
-        style: {
-          color: '#000000'
-        }
-      }
+      color: '#00FF00'
     };
 
+    // Progress bar progress
     let currentProgress;
     if (this.state.progressbarTotal == 0) {
       currentProgress = 0;
@@ -239,11 +231,13 @@ export class App extends React.Component<AppProps, AppState> {
     return (
       <div>
         <div><h2>Tribes Launcher</h2></div>
+        <div><NewsDisplay news={this.state.news} /></div>
+        <div></div>
         <div>
           <ProgressBar.Line
               progress={currentProgress}
               initialAnimate={true}
-              options={options}
+              options={progressBarOptions}
           />
           <LauncherButton 
             config={this.state.config} 
