@@ -47,7 +47,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
         this.props.onProcessStatusUpdate(Injector.isProcessRunning(this.props.config.runningProcessName));
     }
 
-    injectSafe = async (): Promise<InjectionResult> => {
+    injectSafe = (): InjectionResult => {
         let args = this.props.mainProcessArgv.slice(1);
             args.push('--', '--inject',
                       '--process', this.props.config.runningProcessName, 
@@ -61,7 +61,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
     onButtonClick = async () => {
         switch (this.props.launcherState) {
             case LauncherState.LAUNCHED:
-                this.props.onInject(await this.injectSafe());
+                this.props.onInject(this.injectSafe());
                 break;
             case LauncherState.INJECTED:
                 break;

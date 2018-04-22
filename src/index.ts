@@ -40,7 +40,9 @@ const createWindow = async () => {
     if (!('process' in cliOptions) || !('dll' in cliOptions)) {
       process.exit(InjectionResult.MISSING_ARGUMENTS);
     } else {
+      console.log(`Injecting dll ${cliOptions.dll} into process ${cliOptions.process}`);
       const result: InjectionResult = await Injector.inject(cliOptions.process, cliOptions.dll);
+      console.log(`Injection completed with code: ${result}`);
       process.exit(result);
     }
   }

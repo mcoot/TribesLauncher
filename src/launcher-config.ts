@@ -52,7 +52,7 @@ export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfi
         mainExecutablePath: 'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Tribes\\Binaries\\Win32\\TribesAscend.exe',
         useDefaultExecutableArgs: true,
         customExecutableArgs: [],
-        runningProcessName: 'tribesascend.exe',
+        runningProcessName: 'TribesAscend.exe',
         dllPath: `${userDataPath}/tamods.dll`,
         masterServerHost: '45.33.99.115',
         releaseChannel: 'stable'
