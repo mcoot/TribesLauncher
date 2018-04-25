@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Grid } from 'semantic-ui-react';
 
 import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync } from './launcher-config';
 import { LauncherNews } from './launcher-news';
@@ -6,6 +7,7 @@ import { LauncherButton } from './components/launcherButton';
 import { InjectionResult, injectionResultText } from './injector/injector';
 import { ipcRenderer } from 'electron';
 import { NewsDisplay } from './components/newsDisplay';
+import { CommunityDisplay } from './components/communityDisplay'
 
 const ProgressBar = require('react-progressbar.js');
 
@@ -229,29 +231,38 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     return (
-      <div>
-        <div><h2>Tribes Launcher</h2></div>
-        <div><NewsDisplay news={this.state.news} /></div>
-        <div></div>
-        <div>
-          <ProgressBar.Line
-              progress={currentProgress}
-              initialAnimate={true}
-              options={progressBarOptions}
-          />
-          <LauncherButton 
-            config={this.state.config} 
-            mainProcessArgv={this.props.mainProcessArgv}
-            launcherState={this.state.launcherState}
-            userDataPath={this.props.userDataPath}
-            onProcessLaunch={this.onGameLaunch}
-            onProcessStatusUpdate={this.onProcessStatusUpdate}
-            onUpdateStart={this.onUpdateStart}
-            onUpdateComplete={this.onUpdateComplete}
-            onInject={this.onDLLInject}
-          />
-          </div>
-      </div>
+      <Grid>
+        <Grid.Row columns={2}>
+          <Grid.Column>
+           <NewsDisplay news={this.state.news} />
+          </Grid.Column>
+          <Grid.Column>
+           <CommunityDisplay news={this.state.news} />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={2}>
+          <Grid.Column>
+            <ProgressBar.Line
+                progress={currentProgress}
+                initialAnimate={true}
+                options={progressBarOptions}
+            />
+          </Grid.Column>
+          <Grid.Column>
+            <LauncherButton 
+              config={this.state.config} 
+              mainProcessArgv={this.props.mainProcessArgv}
+              launcherState={this.state.launcherState}
+              userDataPath={this.props.userDataPath}
+              onProcessLaunch={this.onGameLaunch}
+              onProcessStatusUpdate={this.onProcessStatusUpdate}
+              onUpdateStart={this.onUpdateStart}
+              onUpdateComplete={this.onUpdateComplete}
+              onInject={this.onDLLInject}
+            />
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
     );
   }
 }

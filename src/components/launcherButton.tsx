@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Button } from 'semantic-ui-react';
 import { LauncherState } from '../app';
 import { LauncherConfig } from '../launcher-config';
 import { Injector, InjectionResult } from '../injector/injector';
@@ -106,7 +107,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
         }
 
         return (
-            <button onClick={this.onButtonClick} disabled={isDisabled}>{buttonText}</button>
+            <Button onClick={this.onButtonClick} disabled={isDisabled}>{buttonText}</Button>
         );
     }
 

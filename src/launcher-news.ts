@@ -24,7 +24,14 @@ export interface CommunityReddit {
     sub: string;
 }
 
-export type CommunityItem = CommunityDiscord | CommunityMumble | CommunityReddit;
+export interface CommunityWeblink {
+    id: number;
+    kind: "weblink";
+    name: string;
+    url: string;
+}
+
+export type CommunityItem = CommunityDiscord | CommunityMumble | CommunityReddit | CommunityWeblink;
 
 /////// News
 
