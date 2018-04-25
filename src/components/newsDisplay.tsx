@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { List, Card } from 'semantic-ui-react';
+
 import { LauncherNews } from '../launcher-news';
 import * as ReactMarkdown from 'react-markdown';
 
@@ -16,11 +18,19 @@ export class NewsDisplay extends React.Component<NewsDisplayProps, null> {
         }
 
         const newsItems = this.props.news!.news.map((ni) => (
-            <li key={ni.id}>
-                <h3>{ni.title}</h3>
-                <span>{ni.date}</span>
-                <ReactMarkdown source={ni.body} />
-            </li>
+            <List.Item key={ni.id}>
+                <Card>
+                    <Card.Header>
+                        {ni.title}
+                    </Card.Header>
+                    <Card.Meta>
+                        {ni.date}
+                    </Card.Meta>
+                    <Card.Content>
+                        <ReactMarkdown source={ni.body} />
+                    </Card.Content>
+                </Card>
+            </List.Item>
         ));
 
         return (

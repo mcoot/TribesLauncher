@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid } from 'semantic-ui-react';
+import { Grid, Progress } from 'semantic-ui-react';
 
 import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync } from './launcher-config';
 import { LauncherNews } from './launcher-news';
@@ -36,6 +36,7 @@ export class App extends React.Component<AppProps, AppState> {
 
   constructor(props: AppProps) {
     super(props);
+    console.log('getting...');
     this.state = {
       config: generateDefaultConfig(),
       launcherState: LauncherState.READY_TO_LAUNCH,
@@ -43,6 +44,7 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarDone: 0,
       news: null
     }
+    console.log('got...');
   }
 
   async componentDidMount() {
@@ -214,20 +216,19 @@ export class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-
-    const progressBarOptions = {
-      strokeWidth: 2,
-      color: '#00FF00'
-    };
-
     // Progress bar progress
+    const progressIsEnabled = (this.state.launcherState == LauncherState.UPDATING || this.state.launcherState == LauncherState.NEEDS_UPDATE);
     let currentProgress;
-    if (this.state.progressbarTotal == 0) {
+    let progressColor = "green";
+
+    if (!progressIsEnabled) {
+      currentProgress = 100;
+    } else if (this.state.progressbarTotal <= 0) {
       currentProgress = 0;
     } else if (this.state.progressbarDone > this.state.progressbarTotal) {
-      currentProgress = 1;
+      currentProgress = 100;
     } else {
-      currentProgress = this.state.progressbarDone / this.state.progressbarTotal;
+      currentProgress = (this.state.progressbarDone / this.state.progressbarTotal) * 100;
     }
 
     return (
@@ -242,11 +243,7 @@ export class App extends React.Component<AppProps, AppState> {
         </Grid.Row>
         <Grid.Row columns={2}>
           <Grid.Column>
-            <ProgressBar.Line
-                progress={currentProgress}
-                initialAnimate={true}
-                options={progressBarOptions}
-            />
+            <Progress precision={0} percent={currentProgress} color={"green"} progress={"percent"} disabled={!progressIsEnabled} autoSuccess />
           </Grid.Column>
           <Grid.Column>
             <LauncherButton 

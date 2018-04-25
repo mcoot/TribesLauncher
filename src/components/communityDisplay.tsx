@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dropdown, DropdownItemProps } from 'semantic-ui-react';
+import { Dropdown, DropdownItemProps, Card } from 'semantic-ui-react';
 
 import { LauncherNews, 
          CommunityItem, 
@@ -30,33 +30,51 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
         
     }
 
-    renderCommunityItem(item: CommunityItem): JSX.Element {
+    renderCommunityItem(item: CommunityItem | null): JSX.Element {
+        const cardTemplate = (name: string, body: JSX.Element): JSX.Element => {
+            return (
+                <Card>
+                    <Card.Header>
+                        {name}
+                    </Card.Header>
+                    <Card.Content>
+                        {body}
+                    </Card.Content>
+                </Card>
+            );
+        }
+
+        if (!item) {
+            return cardTemplate('Invalid Item', (
+                <span>Community item could not be loaded</span>
+            ));
+        }
+
         switch (item.kind) {
             case "discord":
-                return (
-                    <p>Server ID: {item.serverId}</p>
-                );
+                return cardTemplate(item.name, (
+                    <span>Server ID: {item.serverId}</span>
+                ));
 
             case "mumble":
-                return (
-                    <p>Host: {item.url}:{item.port}</p>
-                );
+                return cardTemplate(item.name, (
+                    <span>Host: {item.url}:{item.port}</span>
+                ));
 
             case "reddit":
-                return (
-                    <p>Sub: /r/{item.sub}</p>
-                );
+                return cardTemplate(item.name, (
+                    <span>Sub: /r/{item.sub}</span>
+                ));
 
             case "weblink":
-                return (
-                    <p><link href={item.url}>Link</link></p>
-                );
-
+                return cardTemplate(item.name, (
+                    <span><link href={item.url}>Link</link></span>
+                ));
 
             default:
-                return (
-                    <p>Invalid community information</p>
-                );
+                return cardTemplate('Invalid Item', (
+                    <span>Community item could not be loaded</span>
+                ));
         }
         
     }
@@ -83,17 +101,23 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
     render() {
         if (!this.props.news) {
             return (
-                <div><p>Unable to retrieve communities</p></div>
+                <div>
+                    {this.renderCommunityItem(null)}
+                </div>
             );
         }
         if (this.props.news.community.length == 0) {
             return (
-                <div><p>No community info to display</p></div>
+                <div>
+                    {this.renderCommunityItem(null)}
+                </div>
             );
         }
         if (this.state.currentCommunityIndex >= this.props.news.community.length) {
             return (
-                <div><p>Invalid community selection</p></div>
+                <div>
+                    {this.renderCommunityItem(null)}
+                </div>
             );
         }
 
