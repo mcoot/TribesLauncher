@@ -4,9 +4,9 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
 
-import { InjectionResult, Injector } from './injector/injector';
-import TAModsUpdater from './updater/updater';
-import { downloadLauncherNews } from './launcher-news';
+import { InjectionResult, Injector } from '../common/injector';
+import TAModsUpdater from '../common/updater';
+import { downloadLauncherNews } from '../common/launcher-news';
 
 const allowedCliOptions: commandLineArgs.OptionDefinition[] = [
   { name: 'inject', alias: 'i', type: Boolean },
@@ -69,7 +69,7 @@ const createWindow = async () => {
   mainWindow.mainProcessArgv = process.argv;
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
 
   // Open the DevTools.
   if (isDevMode) {

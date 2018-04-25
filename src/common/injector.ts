@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
 const isAdmin = require('is-admin');
 
-import { LauncherConfig } from '../launcher-config';
+import { LauncherConfig } from './launcher-config';
 
 
 export enum InjectionResult {

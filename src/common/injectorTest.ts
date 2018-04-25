@@ -1,5 +1,5 @@
 import { Injector } from './injector';
-import { generateDefaultConfig } from '../launcher-config';
+import { generateDefaultConfig } from './launcher-config';
 
 console.log('INJECTING...');
 

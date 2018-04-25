@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { List, Card } from 'semantic-ui-react';
 
-import { LauncherNews } from '../launcher-news';
+import { LauncherNews } from '../../common/launcher-news';
 import * as ReactMarkdown from 'react-markdown';
 
 export interface NewsDisplayProps {

@@ -6,7 +6,7 @@ import { LauncherNews,
          CommunityDiscord,
          CommunityMumble, 
          CommunityReddit, 
-         CommunityWeblink } from '../launcher-news';
+         CommunityWeblink } from '../../common/launcher-news';
 
 export interface CommunityDisplayProps {
     news: LauncherNews | null;

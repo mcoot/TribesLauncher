@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { Grid, Progress } from 'semantic-ui-react';
 
-import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync } from './launcher-config';
-import { LauncherNews } from './launcher-news';
-import { LauncherButton } from './components/launcherButton';
-import { InjectionResult, injectionResultText } from './injector/injector';
+import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync } from '../../common/launcher-config';
+import { LauncherNews } from '../../common/launcher-news';
+import { LauncherButton } from './launcherButton';
+import { InjectionResult, injectionResultText } from '../../common/injector';
 import { ipcRenderer } from 'electron';
-import { NewsDisplay } from './components/newsDisplay';
-import { CommunityDisplay } from './components/communityDisplay'
-
-const ProgressBar = require('react-progressbar.js');
+import { NewsDisplay } from './newsDisplay';
+import { CommunityDisplay } from './communityDisplay'
 
 export enum LauncherState {
   NEEDS_UPDATE,
@@ -36,7 +34,6 @@ export class App extends React.Component<AppProps, AppState> {
 
   constructor(props: AppProps) {
     super(props);
-    console.log('getting...');
     this.state = {
       config: generateDefaultConfig(),
       launcherState: LauncherState.READY_TO_LAUNCH,
@@ -44,7 +41,6 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarDone: 0,
       news: null
     }
-    console.log('got...');
   }
 
   async componentDidMount() {
@@ -216,6 +212,10 @@ export class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
+    const mainAppStyle = {
+      // backgroundImage: `url(${imgBgArx1})`
+    };
+
     // Progress bar progress
     const progressIsEnabled = (this.state.launcherState == LauncherState.UPDATING || this.state.launcherState == LauncherState.NEEDS_UPDATE);
     let currentProgress;
@@ -232,7 +232,7 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     return (
-      <Grid>
+      <Grid style={mainAppStyle}>
         <Grid.Row columns={2}>
           <Grid.Column>
            <NewsDisplay news={this.state.news} />

@@ -3,15 +3,15 @@
   "productName": "tribeslauncher",
   "version": "1.0.0",
   "description": "My Electron application description",
-  "main": "src/index.ts",
+  "main": "src/main/index.ts",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package --platform=win32 --arch=ia32",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
-    "updaterTest": "ts-node ./src/updater/updaterTest.ts",
-    "injectorTest": "ts-node ./src/injector/injectorTest.ts"
+    "updaterTest": "ts-node ./src/common/updaterTest.ts",
+    "injectorTest": "ts-node ./src/common/injectorTest.ts"
   },
   "keywords": [],
   "author": "Joseph Spearritt",

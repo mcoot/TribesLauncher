@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { Button } from 'semantic-ui-react';
-import { LauncherState } from '../app';
-import { LauncherConfig } from '../launcher-config';
-import { Injector, InjectionResult } from '../injector/injector';
+import { LauncherState } from './app';
+import { LauncherConfig } from '../../common/launcher-config';
+import { Injector, InjectionResult } from '../../common/injector';
 import { ipcRenderer } from 'electron';
-import TAModsUpdater from '../updater/updater';
 const runas = require('runas');
 
 export interface LauncherButtonProps {

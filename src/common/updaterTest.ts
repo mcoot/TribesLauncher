@@ -5,4 +5,4 @@ import * as os from 'os';
 
 // TAModsUpdater.getConfigDirectory().then(v => console.log(v));
 
-TAModsUpdater.update('stable', '.');
+// TAModsUpdater.update('stable', '.');
