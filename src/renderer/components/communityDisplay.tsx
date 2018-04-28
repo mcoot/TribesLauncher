@@ -130,7 +130,7 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
 
         return (
             <div>
-                <Dropdown options={dropDownItems} onChange={this.OnDropdownSelect} value={currentSelectionItem.id} />
+                <Dropdown button options={dropDownItems} onChange={this.OnDropdownSelect} value={currentSelectionItem.id} />
                 {renderedItem}
             </div>
         );

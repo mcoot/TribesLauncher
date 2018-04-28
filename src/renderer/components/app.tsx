@@ -7,7 +7,7 @@ import { LauncherButton } from './launcherButton';
 import { InjectionResult, injectionResultText } from '../../common/injector';
 import { ipcRenderer } from 'electron';
 import { NewsDisplay } from './newsDisplay';
-import { CommunityDisplay } from './communityDisplay'
+import { CommunityDisplay } from './communityDisplay';
 
 export enum LauncherState {
   NEEDS_UPDATE,
@@ -212,10 +212,6 @@ export class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
-    const mainAppStyle = {
-      // backgroundImage: `url(${imgBgArx1})`
-    };
-
     // Progress bar progress
     const progressIsEnabled = (this.state.launcherState == LauncherState.UPDATING || this.state.launcherState == LauncherState.NEEDS_UPDATE);
     let currentProgress;
@@ -232,34 +228,38 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     return (
-      <Grid style={mainAppStyle}>
-        <Grid.Row columns={2}>
-          <Grid.Column>
-           <NewsDisplay news={this.state.news} />
-          </Grid.Column>
-          <Grid.Column>
-           <CommunityDisplay news={this.state.news} />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row columns={2}>
-          <Grid.Column>
+      <div className={'mainAppDiv'}>
+        <div className={'topContentRow'}>
+          <div className={'newsDiv'}>
+            <NewsDisplay news={this.state.news} />
+          </div>
+          <div className={'communityDiv'}>
+            <CommunityDisplay news={this.state.news} />
+          </div>
+          <div className={'infoButtonsDiv'}>
+            <button>s</button>
+            <button>i</button>
+          </div>
+        </div>
+        <div className={'bottomContentRow'}>
+          <div className={'progressDiv'}>
             <Progress precision={0} percent={currentProgress} color={"green"} progress={"percent"} disabled={!progressIsEnabled} autoSuccess />
-          </Grid.Column>
-          <Grid.Column>
+          </div>
+          <div className={'launcherButtonDiv'}>
             <LauncherButton 
-              config={this.state.config} 
-              mainProcessArgv={this.props.mainProcessArgv}
-              launcherState={this.state.launcherState}
-              userDataPath={this.props.userDataPath}
-              onProcessLaunch={this.onGameLaunch}
-              onProcessStatusUpdate={this.onProcessStatusUpdate}
-              onUpdateStart={this.onUpdateStart}
-              onUpdateComplete={this.onUpdateComplete}
-              onInject={this.onDLLInject}
-            />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+                  config={this.state.config} 
+                  mainProcessArgv={this.props.mainProcessArgv}
+                  launcherState={this.state.launcherState}
+                  userDataPath={this.props.userDataPath}
+                  onProcessLaunch={this.onGameLaunch}
+                  onProcessStatusUpdate={this.onProcessStatusUpdate}
+                  onUpdateStart={this.onUpdateStart}
+                  onUpdateComplete={this.onUpdateComplete}
+                  onInject={this.onDLLInject}
+           />
+          </div>
+        </div>
+      </div>
     );
   }
 }
