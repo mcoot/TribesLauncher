@@ -4,6 +4,9 @@ import { LauncherState } from './app';
 import { LauncherConfig } from '../../common/launcher-config';
 import { Injector, InjectionResult } from '../../common/injector';
 import { ipcRenderer } from 'electron';
+import { Howl } from 'howler';
+import * as fs from 'fs-extra';
+
 const runas = require('runas');
 
 export interface LauncherButtonProps {
@@ -48,14 +51,22 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
     }
 
     injectSafe = (): InjectionResult => {
+        const soundStart = new Howl({src: './assets/sound/phaserifle.ogg'});
+        console.log(soundStart);
+        const soundEnd = new Howl({src: './assets/sound/blueplate.wav'});
+        soundStart.play();
         let args = this.props.mainProcessArgv.slice(1);
             args.push('--', '--inject',
                       '--process', this.props.config.runningProcessName,
                       '--dll', this.props.config.dllPath);
-            return runas(this.props.mainProcessArgv[0], args, {
-                admin: true,
-                hide: true
-            });
+        const result: InjectionResult = runas(this.props.mainProcessArgv[0], args, {
+            admin: true,
+            hide: true
+        });
+        if (result == InjectionResult.SUCCESSFUL) {
+            soundEnd.play();
+        }
+        return result;
     }
 
     onButtonClick = async () => {
