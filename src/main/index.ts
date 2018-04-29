@@ -55,7 +55,8 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    resizable: false
+    resizable: false,
+    frame: false
   });
 
   // Pass the config path to the renderer process

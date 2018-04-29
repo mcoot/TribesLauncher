@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dropdown, DropdownItemProps, Card } from 'semantic-ui-react';
+import { Dropdown, ButtonGroup, DropdownItemProps, Card } from 'semantic-ui-react';
 
 import { LauncherNews,
          CommunityItem } from '../../common/launcher-news';
@@ -25,10 +25,12 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
     renderCommunityItem(item: CommunityItem | null): JSX.Element {
         const cardTemplate = (name: string, body: JSX.Element): JSX.Element => {
             return (
-                <Card centered>
-                    <Card.Header>
-                        {name}
-                    </Card.Header>
+                <Card fluid centered>
+                    <Card.Content>
+                        <Card.Header>
+                            {name}
+                        </Card.Header>
+                    </Card.Content>
                     <Card.Content>
                         {body}
                     </Card.Content>
@@ -120,8 +122,10 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
         const renderedItem = this.renderCommunityItem(currentSelectionItem);
 
         return (
-            <div>
-                <Dropdown button options={dropDownItems} onChange={this.OnDropdownSelect} value={currentSelectionItem.id} />
+            <div className={'communityInnerDiv'}>
+                <ButtonGroup fluid color={'teal'}>
+                    <Dropdown fluid button options={dropDownItems} onChange={this.OnDropdownSelect} value={currentSelectionItem.id} />
+                </ButtonGroup>
                 {renderedItem}
             </div>
         );

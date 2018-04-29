@@ -1,9 +1,15 @@
 body {
+    -webkit-app-region: drag;
     height: 105%;
     overflow: hidden;
     background-color: rgba(0,0,0,0);
     margin: 0;
     padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
 }
 
 #App {
@@ -20,25 +26,32 @@ body {
     flex-direction: column;
 }
 
+.infoButtonsDiv {
+    margin-top: 3px;
+    margin-bottom: 8px;
+}
+
 .infoButtonsDiv > span {
+    -webkit-app-region: no-drag;
     float: right;
 }
 
 .topContentRow {
-    flex: 0 0 80%;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    flex: 1;
     display: flex;
     justify-content: center;
 }
 
 .newsContainerDiv {
+    position: relative;
     flex: 0 0 50%;
-    border: 1px solid red;
 }
 
 .newsInnerDiv {
-    height: 100%;
+    -webkit-app-region: no-drag;
 }
-
 
 .newsItem {
     display: flex;
@@ -48,38 +61,41 @@ body {
 
 .communityContainerDiv {
     flex: 1;
-    border: 1px solid red;
+}
+
+.communityInnerDiv {
+    -webkit-app-region: no-drag;
+    width: 80%;
+    /* height: 100%; */
+    margin: auto;
 }
 
 .bottomContentRow {
-    flex: 1;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    flex: 0 0 18%;
     display: flex;
 }
 
 .progressContainerDiv {
     flex: 1 0 80%;
-    /* display: flex; */
-    /* justify-content: center; */
-    /* align-items: center; */
-    /* border: 1px solid red; */
 }
 
 .progressInnerDiv {
-    padding-top: 10px;
+    -webkit-app-region: no-drag;
+    padding-top: 20px;
     padding-left: 5px;
     padding-right: 5px;
-    /* flex: 0 0 100%; */
-    /* border: 1px solid cyan; */
     width: 100%;
     float: right;
 }
 
 .launcherButtonContainerDiv {
     flex: 0 0 20%;
-    /* border: 1px solid red; */
 }
 
 .launcherButtonInnerDiv {
-    padding-top: 12px;
+    -webkit-app-region: no-drag;
+    padding-top: 22px;
     padding-right: 5px;
 }

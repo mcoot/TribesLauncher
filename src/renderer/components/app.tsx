@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Progress } from 'semantic-ui-react';
+import { Progress, Button, Icon } from 'semantic-ui-react';
 
 import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync } from '../../common/launcher-config';
 import { LauncherNews } from '../../common/launcher-news';
 import { LauncherButton } from './launcherButton';
 import { InjectionResult, injectionResultText } from '../../common/injector';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import { NewsDisplay } from './newsDisplay';
 import { CommunityDisplay } from './communityDisplay';
 
@@ -211,6 +211,22 @@ export class App extends React.Component<AppProps, AppState> {
     }));
   }
 
+  onBtnSettingsPressed = () => {
+
+  }
+
+  onBtnInfoPressed = () => {
+
+  }
+
+  onBtnMinimisePressed = () => {
+    remote.BrowserWindow.getFocusedWindow().minimize();
+  }
+
+  onBtnQuitPressed = () => {
+    remote.app.quit();
+  }
+
   render() {
     // Progress bar progress
     const progressIsEnabled = (this.state.launcherState == LauncherState.UPDATING || this.state.launcherState == LauncherState.NEEDS_UPDATE);
@@ -230,13 +246,24 @@ export class App extends React.Component<AppProps, AppState> {
       <div className={'mainAppDiv'}>
         <div className={'infoButtonsDiv'}>
             <span>
-              <button>s</button>
-              <button>i</button>
+              <Button compact size={'tiny'} icon onClick={this.onBtnSettingsPressed}>
+                <Icon name='settings' />
+              </Button>
+              <Button compact size={'tiny'} icon onClick={this.onBtnInfoPressed}>
+                <Icon  name='info' />
+              </Button>
+              <Button compact size={'tiny'} icon onClick={this.onBtnMinimisePressed}>
+                <Icon fitted name='window minimize' />
+              </Button>
+              <Button compact color={'red'} size={'tiny'} icon onClick={this.onBtnQuitPressed}>
+                <Icon fitted color={'black'} name='window close' />
+              </Button>
             </span>
           </div>
         <div className={'topContentRow'}>
           <div className={'newsContainerDiv'}>
             <NewsDisplay news={this.state.news} />
+            <div className='newsFadeBottom' />
           </div>
           <div className={'communityContainerDiv'}>
             <CommunityDisplay news={this.state.news} />
