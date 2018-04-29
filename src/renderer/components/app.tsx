@@ -9,6 +9,7 @@ import { ipcRenderer, remote } from 'electron';
 import { NewsDisplay } from './newsDisplay';
 import { CommunityDisplay } from './communityDisplay';
 import { InfoModal } from './infoModal';
+import { SettingsModal } from './settingsModal';
 
 export enum LauncherState {
   NEEDS_UPDATE,
@@ -229,11 +230,6 @@ export class App extends React.Component<AppProps, AppState> {
     }));
   }
 
-  onBtnSettingsPressed = () => {
-
-  }
-
-
   onBtnMinimisePressed = () => {
     remote.BrowserWindow.getFocusedWindow().minimize();
   }
@@ -270,14 +266,8 @@ export class App extends React.Component<AppProps, AppState> {
       <div style={mainAppDivStyle} className={'mainAppDiv'}>
         <div className={'infoButtonsDiv'}>
             <span>
-              <Button compact size={'tiny'} icon onClick={this.onBtnSettingsPressed}>
-                <Icon name='settings' />
-              </Button>
-              <InfoModal trigger={
-                <Button compact size={'tiny'} icon>
-                  <Icon  name='info' />
-                </Button>
-              } launcherVersion={1.0} />
+              <SettingsModal initialConfig={this.state.config} />
+              <InfoModal launcherVersion={1.0} />
               <Button compact size={'tiny'} icon onClick={this.onBtnMinimisePressed}>
                 <Icon fitted name='window minimize' />
               </Button>
