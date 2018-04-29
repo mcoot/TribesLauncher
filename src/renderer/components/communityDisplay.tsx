@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dropdown, ButtonGroup, DropdownItemProps, Card } from 'semantic-ui-react';
+import { Dropdown, ButtonGroup, DropdownItemProps, Card, Embed } from 'semantic-ui-react';
 
 import { LauncherNews,
          CommunityItem } from '../../common/launcher-news';
@@ -23,9 +23,13 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
     }
 
     renderCommunityItem(item: CommunityItem | null): JSX.Element {
+        const cardStyle = {
+            height: '100%'
+        };
+
         const cardTemplate = (name: string, body: JSX.Element): JSX.Element => {
             return (
-                <Card fluid centered>
+                <Card style={cardStyle} fluid centered>
                     <Card.Content>
                         <Card.Header>
                             {name}
@@ -46,8 +50,14 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
 
         switch (item.kind) {
             case 'discord':
+                const embedStyle = {
+                    height: '350px'
+                    // overflow: 'auto'
+                };
                 return cardTemplate(item.name, (
-                    <span>Server ID: {item.serverId}</span>
+                    <Embed style={embedStyle} active
+                        url={`https://discordapp.com/widget?id=${item.serverId}&theme=dark`}
+                    />
                 ));
 
             case 'mumble':
@@ -58,6 +68,17 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
             case 'reddit':
                 return cardTemplate(item.name, (
                     <span>Sub: /r/{item.sub}</span>
+                ));
+
+            case 'iframe':
+                const iframeStyle = {
+                    height: '350px'
+                    // overflow: 'auto'
+                };
+                return cardTemplate(item.name, (
+                    <Embed active style={iframeStyle}
+                        url={item.url}
+                    />
                 ));
 
             case 'weblink':
@@ -123,7 +144,7 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
 
         return (
             <div className={'communityInnerDiv'}>
-                <ButtonGroup fluid color={'teal'}>
+                <ButtonGroup fluid color={'grey'}>
                     <Dropdown fluid button options={dropDownItems} onChange={this.OnDropdownSelect} value={currentSelectionItem.id} />
                 </ButtonGroup>
                 {renderedItem}

@@ -28,18 +28,24 @@ export interface AppState {
   progressbarTotal: number;
   progressbarDone: number;
   news: LauncherNews | null;
+  backgroundImage: string;
 }
 
 export class App extends React.Component<AppProps, AppState> {
 
   constructor(props: AppProps) {
     super(props);
+
+    const bgArr = ['arx-1', 'arx-2', 'arx-3', 'kata-1', 'kata-2', 'terminus-1'];
+    const bgIndex = Math.floor(Math.random() * bgArr.length);
+
     this.state = {
       config: generateDefaultConfig(),
       launcherState: LauncherState.READY_TO_LAUNCH,
       progressbarTotal: 0,
       progressbarDone: 0,
-      news: null
+      news: null,
+      backgroundImage: bgArr[bgIndex]
     };
   }
 
@@ -53,7 +59,8 @@ export class App extends React.Component<AppProps, AppState> {
         launcherState: s.launcherState,
         progressbarTotal: s.progressbarTotal,
         progressbarDone: s.progressbarDone,
-        news: s.news
+        news: s.news,
+        backgroundImage: s.backgroundImage
       }));
 
       ipcRenderer.on('update-check-finished-request', this.handleUpdateComplete);
@@ -95,7 +102,8 @@ export class App extends React.Component<AppProps, AppState> {
         launcherState: LauncherState.NEEDS_UPDATE,
         progressbarTotal: 0,
         progressbarDone: 0,
-        news: s.news
+        news: s.news,
+        backgroundImage: s.backgroundImage
       }));
     }
   }
@@ -111,7 +119,8 @@ export class App extends React.Component<AppProps, AppState> {
           launcherState: s.launcherState,
           progressbarTotal: totalFiles,
           progressbarDone: s.progressbarDone,
-          news: s.news
+          news: s.news,
+          backgroundImage: s.backgroundImage
         }));
         break;
       case 'file-finished':
@@ -121,7 +130,8 @@ export class App extends React.Component<AppProps, AppState> {
           launcherState: s.launcherState,
           progressbarTotal: s.progressbarTotal,
           progressbarDone: s.progressbarDone + 1,
-          news: s.news
+          news: s.news,
+          backgroundImage: s.backgroundImage
         }));
         break;
     }
@@ -134,7 +144,8 @@ export class App extends React.Component<AppProps, AppState> {
         launcherState: s.launcherState,
         progressbarDone: s.progressbarDone,
         progressbarTotal: s.progressbarTotal,
-        news: args[1]
+        news: args[1],
+        backgroundImage: s.backgroundImage
       }));
     }
   }
@@ -145,7 +156,8 @@ export class App extends React.Component<AppProps, AppState> {
       launcherState: LauncherState.LAUNCHED,
       progressbarTotal: s.progressbarTotal,
         progressbarDone: s.progressbarDone,
-        news: s.news
+        news: s.news,
+        backgroundImage: s.backgroundImage
     }));
   }
 
@@ -158,7 +170,8 @@ export class App extends React.Component<AppProps, AppState> {
             launcherState: LauncherState.LAUNCHED,
             progressbarTotal: s.progressbarTotal,
             progressbarDone: s.progressbarDone,
-            news: s.news
+            news: s.news,
+            backgroundImage: s.backgroundImage
           }));
         }
         break;
@@ -170,7 +183,8 @@ export class App extends React.Component<AppProps, AppState> {
             launcherState: LauncherState.READY_TO_LAUNCH,
             progressbarTotal: s.progressbarTotal,
             progressbarDone: s.progressbarDone,
-            news: s.news
+            news: s.news,
+            backgroundImage: s.backgroundImage
           }));
         }
         break;
@@ -184,7 +198,8 @@ export class App extends React.Component<AppProps, AppState> {
         launcherState: LauncherState.INJECTED,
         progressbarTotal: s.progressbarTotal,
         progressbarDone: s.progressbarDone,
-        news: s.news
+        news: s.news,
+        backgroundImage: s.backgroundImage
       }));
     } else {
       window.alert(`Injection failed with error message: ${injectionResultText(result)}.`);
@@ -197,7 +212,8 @@ export class App extends React.Component<AppProps, AppState> {
       launcherState: LauncherState.UPDATING,
       progressbarTotal: 0,
       progressbarDone: 0,
-      news: s.news
+      news: s.news,
+      backgroundImage: s.backgroundImage
     }));
   }
 
@@ -207,7 +223,8 @@ export class App extends React.Component<AppProps, AppState> {
       launcherState: LauncherState.READY_TO_LAUNCH,
       progressbarTotal: s.progressbarTotal,
       progressbarDone: s.progressbarTotal,
-      news: s.news
+      news: s.news,
+      backgroundImage: s.backgroundImage
     }));
   }
 
@@ -228,6 +245,15 @@ export class App extends React.Component<AppProps, AppState> {
   }
 
   render() {
+    const mainAppDivStyle = {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundSize: 'cover',
+      backgroundImage: `url("./assets/background/${this.state.backgroundImage}.png")`
+    };
+
     // Progress bar progress
     const progressIsEnabled = (this.state.launcherState == LauncherState.UPDATING || this.state.launcherState == LauncherState.NEEDS_UPDATE);
     let currentProgress;
@@ -243,7 +269,7 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     return (
-      <div className={'mainAppDiv'}>
+      <div style={mainAppDivStyle} className={'mainAppDiv'}>
         <div className={'infoButtonsDiv'}>
             <span>
               <Button compact size={'tiny'} icon onClick={this.onBtnSettingsPressed}>

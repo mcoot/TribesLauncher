@@ -7,6 +7,11 @@ export interface CommunityDiscord {
     kind: 'discord';
     name: string;
     serverId: string;
+    pugOrgChannels: string[];
+    gameChannels: {
+           be: string;
+           ds: string;
+        }[];
 }
 
 export interface CommunityMumble {
@@ -24,6 +29,13 @@ export interface CommunityReddit {
     sub: string;
 }
 
+export interface CommunityIframe {
+    id: number;
+    kind: 'iframe';
+    name: string;
+    url: string;
+}
+
 export interface CommunityWeblink {
     id: number;
     kind: 'weblink';
@@ -31,7 +43,7 @@ export interface CommunityWeblink {
     url: string;
 }
 
-export type CommunityItem = CommunityDiscord | CommunityMumble | CommunityReddit | CommunityWeblink;
+export type CommunityItem = CommunityDiscord | CommunityMumble | CommunityReddit | CommunityIframe | CommunityWeblink;
 
 /////// News
 
