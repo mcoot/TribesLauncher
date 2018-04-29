@@ -25,7 +25,7 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
     renderCommunityItem(item: CommunityItem | null): JSX.Element {
         const cardTemplate = (name: string, body: JSX.Element): JSX.Element => {
             return (
-                <Card>
+                <Card centered>
                     <Card.Header>
                         {name}
                     </Card.Header>

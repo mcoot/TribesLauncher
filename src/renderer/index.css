@@ -15,13 +15,53 @@ body {
     background-size: cover;
     width: 100%;
     height: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.infoButtonsDiv > span {
+    float: right;
 }
 
 .topContentRow {
-    display: inline;
-    
+    flex: 0 0 80%;
+    display: flex;
+    justify-content: center;
+}
+
+.newsContainerDiv {
+    flex: 0 0 50%;
+    border: 1px solid red;
+}
+
+.newsInnerDiv {
+    height: 100%;
+}
+
+
+.newsItem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.communityContainerDiv {
+    flex: 1;
+    border: 1px solid red;
 }
 
 .bottomContentRow {
-    display: inline;
+    flex: 1;
+    display: flex;
+}
+
+.progressDiv {
+    flex: 0 0 85%;
+    border: 1px solid red;
+}
+
+.launcherButtonDiv {
+    flex: 1;
+    border: 1px solid red;
 }

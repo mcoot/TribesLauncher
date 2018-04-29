@@ -18,8 +18,8 @@ export class NewsDisplay extends React.Component<NewsDisplayProps, null> {
         }
 
         const newsItems = this.props.news!.news.map((ni) => (
-            <List.Item key={ni.id}>
-                <Card>
+            <List.Item className={'newsItem'} key={ni.id}>
+                <Card centered>
                     <Card.Header>
                         {ni.title}
                     </Card.Header>
@@ -34,9 +34,11 @@ export class NewsDisplay extends React.Component<NewsDisplayProps, null> {
         ));
 
         return (
-            <ul>
-                {newsItems}
-            </ul>
+            <div className={'newsInnerDiv'}>
+                <List className={'newsList'}>
+                    {newsItems}
+                </List>
+            </div>
         );
     }
 

@@ -27,6 +27,6 @@ const mainProcessArgv = remote.getCurrentWindow().mainProcessArgv;
 
 render(userDataPath, mainProcessArgv);
 
-if (module.hot) { module.hot.accept(() => render(userDataPath, mainProcessArgv))); }
+if (module.hot) { module.hot.accept(() => render(userDataPath, mainProcessArgv)); }
 </script>
 </html>

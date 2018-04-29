@@ -228,16 +228,18 @@ export class App extends React.Component<AppProps, AppState> {
 
     return (
       <div className={'mainAppDiv'}>
+        <div className={'infoButtonsDiv'}>
+            <span>
+              <button>s</button>
+              <button>i</button>
+            </span>
+          </div>
         <div className={'topContentRow'}>
-          <div className={'newsDiv'}>
+          <div className={'newsContainerDiv'}>
             <NewsDisplay news={this.state.news} />
           </div>
-          <div className={'communityDiv'}>
+          <div className={'communityContainerDiv'}>
             <CommunityDisplay news={this.state.news} />
-          </div>
-          <div className={'infoButtonsDiv'}>
-            <button>s</button>
-            <button>i</button>
           </div>
         </div>
         <div className={'bottomContentRow'}>
