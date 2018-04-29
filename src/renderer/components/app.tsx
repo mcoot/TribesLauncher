@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, Progress } from 'semantic-ui-react';
+import { Progress } from 'semantic-ui-react';
 
 import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync } from '../../common/launcher-config';
 import { LauncherNews } from '../../common/launcher-news';
@@ -15,7 +15,7 @@ export enum LauncherState {
   READY_TO_LAUNCH,
   LAUNCHED,
   INJECTED
-};
+}
 
 export interface AppProps {
   userDataPath: string | null;
@@ -27,7 +27,7 @@ export interface AppState {
   launcherState: LauncherState;
   progressbarTotal: number;
   progressbarDone: number;
-  news: LauncherNews | null
+  news: LauncherNews | null;
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -40,7 +40,7 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarTotal: 0,
       progressbarDone: 0,
       news: null
-    }
+    };
   }
 
   async componentDidMount() {
@@ -88,7 +88,7 @@ export class App extends React.Component<AppProps, AppState> {
     window.removeEventListener('beforeunload', this.componentCleanup);
   }
 
-  handleUpdateComplete = async (event: any, result: boolean) => {
+  handleUpdateComplete = async (_: any, result: boolean) => {
     if (result) {
       this.setState((s) => ({
         config: s.config,
@@ -100,7 +100,7 @@ export class App extends React.Component<AppProps, AppState> {
     }
   }
 
-  handleUpdateTick = async (event: any, args: any[]) => {
+  handleUpdateTick = async (_: any, args: any[]) => {
     const msgKind: string = args[0];
 
     switch (msgKind) {
@@ -115,7 +115,7 @@ export class App extends React.Component<AppProps, AppState> {
         }));
         break;
       case 'file-finished':
-        const fileName: string = args[1];
+        // const fileName: string = args[1];
         this.setState((s) => ({
           config: s.config,
           launcherState: s.launcherState,
@@ -127,7 +127,7 @@ export class App extends React.Component<AppProps, AppState> {
     }
   }
 
-  handleNewsRetrieved = async (event: any, args: [boolean, any]) => {
+  handleNewsRetrieved = async (_: any, args: [boolean, any]) => {
     if (args[0] && args[1]) {
       this.setState((s) => ({
         config: s.config,
@@ -215,7 +215,6 @@ export class App extends React.Component<AppProps, AppState> {
     // Progress bar progress
     const progressIsEnabled = (this.state.launcherState == LauncherState.UPDATING || this.state.launcherState == LauncherState.NEEDS_UPDATE);
     let currentProgress;
-    let progressColor = "green";
 
     if (!progressIsEnabled) {
       currentProgress = 100;
@@ -243,11 +242,11 @@ export class App extends React.Component<AppProps, AppState> {
         </div>
         <div className={'bottomContentRow'}>
           <div className={'progressDiv'}>
-            <Progress precision={0} percent={currentProgress} color={"green"} progress={"percent"} disabled={!progressIsEnabled} autoSuccess />
+            <Progress precision={0} percent={currentProgress} color={'green'} progress={'percent'} disabled={!progressIsEnabled} autoSuccess />
           </div>
           <div className={'launcherButtonDiv'}>
-            <LauncherButton 
-                  config={this.state.config} 
+            <LauncherButton
+                  config={this.state.config}
                   mainProcessArgv={this.props.mainProcessArgv}
                   launcherState={this.state.launcherState}
                   userDataPath={this.props.userDataPath}

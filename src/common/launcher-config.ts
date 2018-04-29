@@ -2,33 +2,33 @@ import * as fs from 'fs-extra';
 import {Validator} from 'jsonschema';
 
 const launcherConfigSchema = {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "mainExecutablePath": {
-            "type": "string"
+    'type': 'object',
+    'additionalProperties': false,
+    'properties': {
+        'mainExecutablePath': {
+            'type': 'string'
         },
-        "customExecutableArgs": {
-            "type": "array",
-            "items": {"type": "string"}
+        'customExecutableArgs': {
+            'type': 'array',
+            'items': {'type': 'string'}
         },
-        "useDefaultExecutableArgs": {
-            "type": "boolean"
+        'useDefaultExecutableArgs': {
+            'type': 'boolean'
         },
-        "runningProcessName": {
-            "type": "string"
+        'runningProcessName': {
+            'type': 'string'
         },
-        "dllPath": {
-            "type": "string"
+        'dllPath': {
+            'type': 'string'
         },
-        "masterServerHost": {
-            "type": "string"
+        'masterServerHost': {
+            'type': 'string'
         },
-        "releaseChannel": {
-            "type": "string"
+        'releaseChannel': {
+            'type': 'string'
         },
-        "updateUrl": {
-            "type": "string"
+        'updateUrl': {
+            'type': 'string'
         }
     }
 };
@@ -81,7 +81,7 @@ const loadLauncherConfigFromFile = async (filePath: string): Promise<LauncherCon
 
     // Validate against schema
     const validity = (new Validator()).validate(launcherJson, launcherConfigSchema);
-    
+
     if (!validity.valid) {
         throw new Error(`Invalid launcher configuration: ${validity.errors}`);
     }
@@ -110,4 +110,4 @@ export const saveLauncherConfig = async (config: LauncherConfig, filePath: strin
 export const saveLauncherConfigSync = (config: LauncherConfig, filePath: string): void  => {
     const contents = JSON.stringify(config, null, 4);
     fs.writeFileSync(filePath, contents);
-}
+};

@@ -1,12 +1,8 @@
 import * as React from 'react';
 import { Dropdown, DropdownItemProps, Card } from 'semantic-ui-react';
 
-import { LauncherNews, 
-         CommunityItem, 
-         CommunityDiscord,
-         CommunityMumble, 
-         CommunityReddit, 
-         CommunityWeblink } from '../../common/launcher-news';
+import { LauncherNews,
+         CommunityItem } from '../../common/launcher-news';
 
 export interface CommunityDisplayProps {
     news: LauncherNews | null;
@@ -23,11 +19,7 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
 
         this.state = {
             currentCommunityIndex: 0
-        }
-    }
-
-    componentDidMount() {
-        
+        };
     }
 
     renderCommunityItem(item: CommunityItem | null): JSX.Element {
@@ -42,7 +34,7 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
                     </Card.Content>
                 </Card>
             );
-        }
+        };
 
         if (!item) {
             return cardTemplate('Invalid Item', (
@@ -51,22 +43,22 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
         }
 
         switch (item.kind) {
-            case "discord":
+            case 'discord':
                 return cardTemplate(item.name, (
                     <span>Server ID: {item.serverId}</span>
                 ));
 
-            case "mumble":
+            case 'mumble':
                 return cardTemplate(item.name, (
                     <span>Host: {item.url}:{item.port}</span>
                 ));
 
-            case "reddit":
+            case 'reddit':
                 return cardTemplate(item.name, (
                     <span>Sub: /r/{item.sub}</span>
                 ));
 
-            case "weblink":
+            case 'weblink':
                 return cardTemplate(item.name, (
                     <span><link href={item.url}>Link</link></span>
                 ));
@@ -76,7 +68,6 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
                     <span>Community item could not be loaded</span>
                 ));
         }
-        
     }
 
     GetDropdownItem(item: CommunityItem): DropdownItemProps {
@@ -86,14 +77,14 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
         };
     }
 
-    OnDropdownSelect = (event: any, {value}: {value: number}): void => {
+    OnDropdownSelect = (_: any, {value}: {value: number}): void => {
         if (!this.props.news) {
             return;
         }
 
         const foundIndex = this.props.news.community.findIndex((item) => item.id == value);
 
-        this.setState((s) => ({
+        this.setState((_) => ({
             currentCommunityIndex: foundIndex
         }));
     }

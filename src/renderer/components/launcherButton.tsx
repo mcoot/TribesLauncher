@@ -16,10 +16,10 @@ export interface LauncherButtonProps {
     onInject: (result: InjectionResult) => void;
     onUpdateStart: () => void;
     onUpdateComplete: () => void;
-};
+}
 
 export interface LauncherButtonState {
-};
+}
 
 export class LauncherButton extends React.Component<LauncherButtonProps, LauncherButtonState> {
 
@@ -32,7 +32,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
     componentDidMount() {
         this.pollTimer = setInterval(this.pollProcessStatus, 1000);
 
-        ipcRenderer.on('update-finished-request', (event: string) => {
+        ipcRenderer.on('update-finished-request', (_: string) => {
             this.props.onUpdateComplete();
         });
     }
@@ -50,7 +50,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
     injectSafe = (): InjectionResult => {
         let args = this.props.mainProcessArgv.slice(1);
             args.push('--', '--inject',
-                      '--process', this.props.config.runningProcessName, 
+                      '--process', this.props.config.runningProcessName,
                       '--dll', this.props.config.dllPath);
             return runas(this.props.mainProcessArgv[0], args, {
                 admin: true,

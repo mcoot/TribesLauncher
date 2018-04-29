@@ -83,7 +83,6 @@ const createWindow = async () => {
     event.sender.send('update-check-finished-request', result);
   });
 
-
   ipcMain.on('update-start-request', async (event: any, args: any) => {
     await TAModsUpdater.update(args[0], args[1], false, args[2], mainWindow);
     event.sender.send('update-finished-request');

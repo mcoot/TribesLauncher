@@ -56,6 +56,7 @@
     "@types/node": "^9.6.1",
     "@types/react": "^0.14.55",
     "@types/react-dom": "^0.14.20",
+    "@types/react-hot-loader": "^4.1.0",
     "@types/semantic-ui": "^2.2.6",
     "@types/winreg": "^1.2.30",
     "@types/xml-parser": "^1.2.29",
@@ -89,6 +90,7 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^5.0.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",

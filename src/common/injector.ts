@@ -5,7 +5,6 @@ const isAdmin = require('is-admin');
 
 import { LauncherConfig } from './launcher-config';
 
-
 export enum InjectionResult {
     SUCCESSFUL = 0,
     MISSING_ARGUMENTS,
@@ -14,7 +13,7 @@ export enum InjectionResult {
     INSUFFICIENT_PRIVILEGE,
     INJECTION_FAILED,
     UNKNOWN_ERROR
-};
+}
 
 export function injectionResultText(result: InjectionResult) {
     switch (result) {
@@ -35,10 +34,9 @@ export function injectionResultText(result: InjectionResult) {
         default:
             return '';
     }
-};
+}
 
 export class Injector {
-    
     private static generateExecutableArgs(config: LauncherConfig) {
         let args: string[] = [];
 

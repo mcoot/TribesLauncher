@@ -9,7 +9,7 @@ const xml2js = require('xml2js');
 enum RootLocation {
     LAUNCHER_DIRECTORY,
     CONFIG_DIRECTORY
-};
+}
 
 type FileVersion = number;
 
@@ -105,7 +105,7 @@ export default class TAModsUpdater {
                 if (f._.split(/[\/\\]/)[0] == '!CONFIG') {
                     froot = RootLocation.CONFIG_DIRECTORY;
                 } else {
-                    froot = RootLocation.LAUNCHER_DIRECTORY; 
+                    froot = RootLocation.LAUNCHER_DIRECTORY;
                 }
                 fpath = f._;
                 files.push(new TAModsFile(froot, fpath, version));
@@ -181,7 +181,7 @@ export default class TAModsUpdater {
             hive: Registry.HKCU,
             key: '\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders'
         });
-        
+
         const values = await this.regKeyValuesPromise(regKey);
         const result = values.find((regItem) => regItem.name === 'Personal');
         if (!result) {
@@ -190,7 +190,9 @@ export default class TAModsUpdater {
         return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
     }
 
-    public static async update(channel: string, baseDir: string, downloadSync: boolean = false, updateUrl: string, ipcWindow: BrowserWindow | null = null): Promise<void> {
+    public static async update(channel: string, baseDir: string,
+                               downloadSync: boolean = false, updateUrl: string,
+                               ipcWindow: BrowserWindow | null = null): Promise<void> {
 
         const updateList = await this.getUpdateList(channel, `${baseDir}/${this.versionFile}`, updateUrl);
 
@@ -222,7 +224,6 @@ export default class TAModsUpdater {
             // Download asynchronously
             await Promise.all(updateList.map(f => this.downloadFile(f, `${baseDir}/tmp`, updateUrl, ipcWindow)));
         }
-        
 
         const allFiles = await fs.readdir(`${baseDir}/tmp`);
         const configFiles = await fs.readdir(`${baseDir}/tmp/!CONFIG`);
