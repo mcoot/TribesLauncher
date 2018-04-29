@@ -243,10 +243,12 @@ export class App extends React.Component<AppProps, AppState> {
           </div>
         </div>
         <div className={'bottomContentRow'}>
-          <div className={'progressDiv'}>
-            <Progress precision={0} percent={currentProgress} color={'green'} progress={'percent'} disabled={!progressIsEnabled} autoSuccess />
+          <div className={'progressContainerDiv'}>
+            <div className={'progressInnerDiv'}>
+              <Progress precision={0} percent={currentProgress} size={'large'} color={'green'} progress={'percent'} autoSuccess />
+            </div>
           </div>
-          <div className={'launcherButtonDiv'}>
+          <div className={'launcherButtonContainerDiv'}>
             <LauncherButton
                   config={this.state.config}
                   mainProcessArgv={this.props.mainProcessArgv}

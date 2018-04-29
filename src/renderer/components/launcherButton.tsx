@@ -106,7 +106,9 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
         }
 
         return (
-            <Button onClick={this.onButtonClick} disabled={isDisabled}>{buttonText}</Button>
+            <div className={'launcherButtonInnerDiv'}>
+                <Button fluid primary onClick={this.onButtonClick} disabled={isDisabled}>{buttonText}</Button>
+            </div>
         );
     }
 
