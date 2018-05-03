@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { Modal, Form, Input, Button, Icon } from 'semantic-ui-react';
+import { Header, Modal, Form, Input, Button, Icon } from 'semantic-ui-react';
+
+import { remote } from 'electron';
 
 import { LauncherConfig } from '../../common/launcher-config';
 
@@ -41,16 +43,44 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
         this.setState((s) => ({
             editedConfig: {
                 mainExecutablePath: formData.mainExecutablePath,
-                runningProcessName: s.editedConfig.runningProcessName,
+                runningProcessName: formData.runningProcessName,
                 dllPath: formData.dllPath,
                 useDefaultExecutableArgs: s.editedConfig.useDefaultExecutableArgs,
                 customExecutableArgs: s.editedConfig.customExecutableArgs,
-                masterServerHost: s.editedConfig.masterServerHost,
+                masterServerHost: formData.masterServerHost,
                 releaseChannel: s.editedConfig.releaseChannel,
                 updateUrl: s.editedConfig.updateUrl
             },
             open: s.open
         }));
+    }
+
+    onTribesExePathFileClick = () => {
+        remote.dialog.showOpenDialog({properties: ['openFile']}, (paths) => {
+            const c: LauncherConfig = JSON.parse(JSON.stringify(this.state.editedConfig));
+            if (!paths || paths.length == 0) {
+                return;
+            }
+            c.mainExecutablePath = paths[0];
+            this.setState((s) => ({
+                editedConfig: c,
+                open: s.open
+            }));
+        });
+    }
+
+    onDLLPathFileClick = () => {
+        remote.dialog.showOpenDialog({properties: ['openFile']}, (paths) => {
+            const c: LauncherConfig = JSON.parse(JSON.stringify(this.state.editedConfig));
+            if (!paths || paths.length == 0) {
+                return;
+            }
+            c.dllPath = paths[0];
+            this.setState((s) => ({
+                editedConfig: c,
+                open: s.open
+            }));
+        });
     }
 
     onFormSubmit = (event: any) => {
@@ -69,22 +99,43 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                 </Modal.Header>
                 <Modal.Content>
                     <Form onSubmit={this.onFormSubmit}>
+                        <Header>Path Settings</Header>
                         <Form.Input
                             label='Tribes Executable Path'
                             name={'mainExecutablePath'}
-                            action={{icon: 'folder open'}}
+                            action={{icon: 'folder open', onClick: this.onTribesExePathFileClick}}
                             value={this.state.editedConfig.mainExecutablePath}
                             onChange={this.onFormChange} />
                         <Form.Input
                             label='TAMods DLL Path'
                             name={'dllPath'}
-                            action={{icon: 'folder open'}}
+                            action={{icon: 'folder open', onClick: this.onDLLPathFileClick}}
                             value={this.state.editedConfig.dllPath}
                             onChange={this.onFormChange} />
                         <Form.Group>
-                            <Form.Button onClick={this.onFormClose} negative icon='save'>Cancel</Form.Button>
-                            <Form.Button positive icon='cancel'>Save</Form.Button>
+                            <Form.Input
+                                label='Tribes Process Name'
+                                name={'runningProcessName'}
+                                value={this.state.editedConfig.runningProcessName}
+                                onChange={this.onFormChange} />
+                            <Form.Input
+                                label='Login Server Host'
+                                name={'masterServerHost'}
+                                value={this.state.editedConfig.masterServerHost}
+                                onChange={this.onFormChange} />
                         </Form.Group>
+                        <Header>Launcher Settings</Header>
+                        <Form.Group>
+                            <Form.Button onClick={this.onFormClose} negative>
+                                <Icon name='cancel' />
+                                Cancel
+                            </Form.Button>
+                            <Form.Button positive>
+                            <Icon name='save' />
+                                Save
+                            </Form.Button>
+                        </Form.Group>
+
                     </Form>
                 </Modal.Content>
             </Modal>
