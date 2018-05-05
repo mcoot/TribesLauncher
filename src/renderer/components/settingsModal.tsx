@@ -7,7 +7,7 @@ import { LauncherConfig } from '../../common/launcher-config';
 
 export interface SettingsModalProps {
     initialConfig: LauncherConfig;
-    trigger: JSX.Element;
+    onSettingsFormSave: (updatedConfig: LauncherConfig) => void;
 }
 
 export interface SettingsModalState {
@@ -39,18 +39,11 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
         }));
     }
 
-    private onFormChange = (_: any, formData: any) => {
+    private onFormChange = (_: any, {name, value}: {name: string, value: any}) => {
+        const newConfig = JSON.parse(JSON.stringify(this.state.editedConfig));
+        newConfig[name] = value;
         this.setState((s) => ({
-            editedConfig: {
-                mainExecutablePath: formData.mainExecutablePath,
-                runningProcessName: formData.runningProcessName,
-                dllPath: formData.dllPath,
-                useDefaultExecutableArgs: s.editedConfig.useDefaultExecutableArgs,
-                customExecutableArgs: s.editedConfig.customExecutableArgs,
-                masterServerHost: formData.masterServerHost,
-                releaseChannel: s.editedConfig.releaseChannel,
-                updateUrl: s.editedConfig.updateUrl
-            },
+            editedConfig: newConfig,
             open: s.open
         }));
     }
@@ -70,7 +63,9 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
     }
 
     onDLLPathFileClick = () => {
-        remote.dialog.showOpenDialog({properties: ['openFile']}, (paths) => {
+        console.log(this.state.open);
+        remote.dialog.showOpenDialog(remote.getCurrentWindow(), {properties: ['openFile']}, (paths) => {
+            console.log(this.state.open);
             const c: LauncherConfig = JSON.parse(JSON.stringify(this.state.editedConfig));
             if (!paths || paths.length == 0) {
                 return;
@@ -84,7 +79,12 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
     }
 
     onFormSubmit = (event: any) => {
-        // Stuff
+        const newConfig = JSON.parse(JSON.stringify(this.state.editedConfig));
+        this.props.onSettingsFormSave(newConfig);
+        this.setState((s) => ({
+            editedConfig: s.editedConfig,
+            open: false
+        }));
         event.preventDefault();
     }
 
@@ -98,7 +98,7 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                     Settings
                 </Modal.Header>
                 <Modal.Content>
-                    <Form onSubmit={this.onFormSubmit}>
+                    <Form>
                         <Header>Path Settings</Header>
                         <Form.Input
                             label='Tribes Executable Path'
@@ -130,7 +130,7 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                                 <Icon name='cancel' />
                                 Cancel
                             </Form.Button>
-                            <Form.Button positive>
+                            <Form.Button onClick={this.onFormSubmit} positive >
                             <Icon name='save' />
                                 Save
                             </Form.Button>

@@ -238,6 +238,17 @@ export class App extends React.Component<AppProps, AppState> {
     remote.app.quit();
   }
 
+  onSettingsFormSave = (updatedConfig: LauncherConfig): void => {
+    this.setState((s) => ({
+      config: updatedConfig,
+      launcherState: s.launcherState,
+      progressbarTotal: s.progressbarTotal,
+      progressbarDone: s.progressbarTotal,
+      news: s.news,
+      backgroundImage: s.backgroundImage
+    }));
+  }
+
   render() {
     const mainAppDivStyle = {
       width: '100%',
@@ -266,7 +277,7 @@ export class App extends React.Component<AppProps, AppState> {
       <div style={mainAppDivStyle} className={'mainAppDiv'}>
         <div className={'infoButtonsDiv'}>
             <span>
-              <SettingsModal initialConfig={this.state.config} />
+              <SettingsModal initialConfig={this.state.config} onSettingsFormSave={this.onSettingsFormSave} />
               <InfoModal launcherVersion={1.0} />
               <Button compact size={'tiny'} icon onClick={this.onBtnMinimisePressed}>
                 <Icon fitted name='window minimize' />
