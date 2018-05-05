@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Progress, Button, Icon } from 'semantic-ui-react';
 import * as fs from 'fs-extra';
+import * as semver from 'semver';
 
 import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync, LAUNCHER_VERSION } from '../../common/launcher-config';
 import { LauncherNews } from '../../common/launcher-news';
@@ -181,7 +182,7 @@ export class App extends React.Component<AppProps, AppState> {
       case OnLaunchModelStatus.NOT_OPENED:
         if (!fs.existsSync(configSource.mainExecutablePath)) {
           newModalState = OnLaunchModelStatus.SHOWING_PATH_CONFIG;
-        } else if (newsSource && newsSource.latestLauncherVersion > LAUNCHER_VERSION) {
+        } else if (newsSource && semver.gt(newsSource.latestLauncherVersion, LAUNCHER_VERSION)) {
           newModalState = OnLaunchModelStatus.SHOWING_UPDATE_MESSAGE;
         }
         break;
@@ -190,7 +191,7 @@ export class App extends React.Component<AppProps, AppState> {
           newConfig.mainExecutablePath = newExecutablePath;
         }
 
-        if (newsSource && newsSource.latestLauncherVersion > LAUNCHER_VERSION) {
+        if (newsSource &&  semver.gt(newsSource.latestLauncherVersion, LAUNCHER_VERSION)) {
           newModalState = OnLaunchModelStatus.SHOWING_UPDATE_MESSAGE;
         } else {
           newModalState = OnLaunchModelStatus.COMPLETED;

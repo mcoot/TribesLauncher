@@ -10,7 +10,7 @@ function getInstallerConfig() {
     return Promise.resolve({
         appDirectory: path.join(outPath, 'tribeslauncher-win32-ia32'),
         authors: 'mcoot',
-        version: '0.1',
+        version: '0.1.0',
         noMsi: true,
         outputDirectory: path.join(outPath, 'installer'),
         exe: 'tribeslauncher.exe',

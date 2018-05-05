@@ -1,7 +1,8 @@
 import * as fs from 'fs-extra';
 import {Validator} from 'jsonschema';
+const packageJson = require('../../package.json');
 
-export const LAUNCHER_VERSION = 0.1;
+export const LAUNCHER_VERSION = packageJson.version;
 
 const launcherConfigSchema = {
     'type': 'object',

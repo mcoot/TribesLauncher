@@ -17,7 +17,7 @@ export interface OnLaunchModalProps {
     status: OnLaunchModelStatus;
     config: LauncherConfig;
     news: LauncherNews | null;
-    launcherVersion: number;
+    launcherVersion: string;
     onModalButtonClick: (newExecutablePath?: string) => void;
 }
 
@@ -84,7 +84,7 @@ export class OnLaunchModal extends React.Component<OnLaunchModalProps, OnLaunchM
         const pathConfigOpen = this.props.status === OnLaunchModelStatus.SHOWING_PATH_CONFIG;
         const updateMessageOpen = this.props.status === OnLaunchModelStatus.SHOWING_UPDATE_MESSAGE;
 
-        const newUpdateVersion = (this.props.news && this.props.news.latestLauncherVersion.toString()) || '<unknown>';
+        const newUpdateVersion = (this.props.news && this.props.news.latestLauncherVersion) || '<unknown>';
         const updateUrl = (this.props.news && this.props.news.launcherUpdateLink) || '<unknown>';
 
         const modalCloseButton = (

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Modal, Button, Icon } from 'semantic-ui-react';
 
 export interface InfoModalProps {
-    launcherVersion: number;
+    launcherVersion: string;
 }
 
 export interface InfoModelState {
