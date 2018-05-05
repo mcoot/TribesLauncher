@@ -144,9 +144,7 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
 
         return (
             <div className={'communityInnerDiv'}>
-                <ButtonGroup fluid color={'grey'}>
-                    <Dropdown fluid button options={dropDownItems} onChange={this.OnDropdownSelect} value={currentSelectionItem.id} />
-                </ButtonGroup>
+                <Dropdown fluid selection options={dropDownItems} onChange={this.OnDropdownSelect} value={currentSelectionItem.id} />
                 {renderedItem}
             </div>
         );

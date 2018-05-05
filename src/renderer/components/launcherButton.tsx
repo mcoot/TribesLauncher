@@ -51,7 +51,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
     }
 
     injectSafe = (): InjectionResult => {
-        const soundStart = new Howl({src: './assets/sound/phaserifle.ogg'});
+        const soundStart = new Howl({src: './assets/sound/phaserifle.wav'});
         console.log(soundStart);
         const soundEnd = new Howl({src: './assets/sound/blueplate.wav'});
         soundStart.play();

@@ -73,6 +73,17 @@ const createWindow = async () => {
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
 
+  // Clicking links should open in the browser, not the electron window
+  const handleRedirect = (e: Electron.Event, url: string) => {
+    if (url != mainWindow!.webContents.getURL()) {
+      e.preventDefault();
+      require('electron').shell.openExternal(url);
+    }
+  };
+
+  mainWindow.webContents.on('will-navigate', handleRedirect);
+  mainWindow.webContents.on('new-window', handleRedirect);
+
   // Open the DevTools.
   if (isDevMode) {
     await installExtension(REACT_DEVELOPER_TOOLS);

@@ -57,6 +57,8 @@ export interface NewsItem {
 export interface LauncherNews {
     news: NewsItem[];
     community: CommunityItem[];
+    latestLauncherVersion: number;
+    launcherUpdateLink: string;
 }
 
 /////// Functions

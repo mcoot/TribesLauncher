@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Progress, Button, Icon } from 'semantic-ui-react';
+import * as fs from 'fs-extra';
 
-import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync } from '../../common/launcher-config';
+import { LauncherConfig, generateDefaultConfig, loadLauncherConfig, saveLauncherConfigSync, LAUNCHER_VERSION } from '../../common/launcher-config';
 import { LauncherNews } from '../../common/launcher-news';
 import { LauncherButton } from './launcherButton';
 import { InjectionResult, injectionResultText } from '../../common/injector';
@@ -10,6 +11,7 @@ import { NewsDisplay } from './newsDisplay';
 import { CommunityDisplay } from './communityDisplay';
 import { InfoModal } from './infoModal';
 import { SettingsModal } from './settingsModal';
+import { OnLaunchModal, OnLaunchModelStatus } from './onLaunchModal';
 
 export enum LauncherState {
   NEEDS_UPDATE,
@@ -31,6 +33,7 @@ export interface AppState {
   progressbarDone: number;
   news: LauncherNews | null;
   backgroundImage: string;
+  onLaunchModalState: OnLaunchModelStatus;
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -47,7 +50,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarTotal: 0,
       progressbarDone: 0,
       news: null,
-      backgroundImage: bgArr[bgIndex]
+      backgroundImage: bgArr[bgIndex],
+      onLaunchModalState: OnLaunchModelStatus.NOT_OPENED
     };
   }
 
@@ -62,9 +66,12 @@ export class App extends React.Component<AppProps, AppState> {
         progressbarTotal: s.progressbarTotal,
         progressbarDone: s.progressbarDone,
         news: s.news,
-        backgroundImage: s.backgroundImage
+        backgroundImage: s.backgroundImage,
+        onLaunchModalState: s.onLaunchModalState
       }));
-
+      if (this.state.onLaunchModalState === OnLaunchModelStatus.NOT_OPENED) {
+        this.handleOnLaunchModelStateChange(loadedConfig, null);
+      }
       ipcRenderer.on('update-check-finished-request', this.handleUpdateComplete);
       ipcRenderer.on('update-tick', this.handleUpdateTick);
 
@@ -105,7 +112,8 @@ export class App extends React.Component<AppProps, AppState> {
         progressbarTotal: 0,
         progressbarDone: 0,
         news: s.news,
-        backgroundImage: s.backgroundImage
+        backgroundImage: s.backgroundImage,
+        onLaunchModalState: s.onLaunchModalState
       }));
     }
   }
@@ -122,7 +130,8 @@ export class App extends React.Component<AppProps, AppState> {
           progressbarTotal: totalFiles,
           progressbarDone: s.progressbarDone,
           news: s.news,
-          backgroundImage: s.backgroundImage
+          backgroundImage: s.backgroundImage,
+          onLaunchModalState: s.onLaunchModalState
         }));
         break;
       case 'file-finished':
@@ -133,7 +142,8 @@ export class App extends React.Component<AppProps, AppState> {
           progressbarTotal: s.progressbarTotal,
           progressbarDone: s.progressbarDone + 1,
           news: s.news,
-          backgroundImage: s.backgroundImage
+          backgroundImage: s.backgroundImage,
+          onLaunchModalState: s.onLaunchModalState
         }));
         break;
     }
@@ -141,15 +151,63 @@ export class App extends React.Component<AppProps, AppState> {
 
   handleNewsRetrieved = async (_: any, args: [boolean, any]) => {
     if (args[0] && args[1]) {
+      const retrievedNews: LauncherNews = args[1];
       this.setState((s) => ({
         config: s.config,
         launcherState: s.launcherState,
         progressbarDone: s.progressbarDone,
         progressbarTotal: s.progressbarTotal,
-        news: args[1],
-        backgroundImage: s.backgroundImage
+        news: retrievedNews,
+        backgroundImage: s.backgroundImage,
+        onLaunchModalState: s.onLaunchModalState
       }));
+      if (this.state.onLaunchModalState === OnLaunchModelStatus.NOT_OPENED) {
+        this.handleOnLaunchModelStateChange(null, retrievedNews);
+      }
     }
+  }
+
+  handleOnLaunchModelStateChange = (alternateConfigSource: LauncherConfig | null,
+                                    alternateNewsSource: LauncherNews | null,
+                                    newExecutablePath?: string): void => {
+    const configSource = alternateConfigSource || this.state.config;
+    const newsSource = alternateNewsSource || this.state.news;
+
+    let newModalState = this.state.onLaunchModalState;
+    let newConfig = this.state.config;
+
+    switch (this.state.onLaunchModalState) {
+      case OnLaunchModelStatus.NOT_OPENED:
+        if (!fs.existsSync(configSource.mainExecutablePath)) {
+          newModalState = OnLaunchModelStatus.SHOWING_PATH_CONFIG;
+        } else if (newsSource && newsSource.latestLauncherVersion > LAUNCHER_VERSION) {
+          newModalState = OnLaunchModelStatus.SHOWING_UPDATE_MESSAGE;
+        }
+        break;
+      case OnLaunchModelStatus.SHOWING_PATH_CONFIG:
+        if (newExecutablePath) {
+          newConfig.mainExecutablePath = newExecutablePath;
+        }
+
+        if (newsSource && newsSource.latestLauncherVersion > LAUNCHER_VERSION) {
+          newModalState = OnLaunchModelStatus.SHOWING_UPDATE_MESSAGE;
+        } else {
+          newModalState = OnLaunchModelStatus.COMPLETED;
+        }
+        break;
+      case OnLaunchModelStatus.SHOWING_UPDATE_MESSAGE:
+        newModalState = OnLaunchModelStatus.COMPLETED;
+        break;
+    }
+    this.setState((s) => ({
+      config: newConfig,
+      launcherState: s.launcherState,
+      progressbarDone: s.progressbarDone,
+      progressbarTotal: s.progressbarTotal,
+      news: s.news,
+      backgroundImage: s.backgroundImage,
+      onLaunchModalState: newModalState
+    }));
   }
 
   onGameLaunch = (): void => {
@@ -159,7 +217,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarTotal: s.progressbarTotal,
         progressbarDone: s.progressbarDone,
         news: s.news,
-        backgroundImage: s.backgroundImage
+        backgroundImage: s.backgroundImage,
+        onLaunchModalState: s.onLaunchModalState
     }));
   }
 
@@ -173,7 +232,8 @@ export class App extends React.Component<AppProps, AppState> {
             progressbarTotal: s.progressbarTotal,
             progressbarDone: s.progressbarDone,
             news: s.news,
-            backgroundImage: s.backgroundImage
+            backgroundImage: s.backgroundImage,
+            onLaunchModalState: s.onLaunchModalState
           }));
         }
         break;
@@ -186,7 +246,8 @@ export class App extends React.Component<AppProps, AppState> {
             progressbarTotal: s.progressbarTotal,
             progressbarDone: s.progressbarDone,
             news: s.news,
-            backgroundImage: s.backgroundImage
+            backgroundImage: s.backgroundImage,
+            onLaunchModalState: s.onLaunchModalState
           }));
         }
         break;
@@ -201,7 +262,8 @@ export class App extends React.Component<AppProps, AppState> {
         progressbarTotal: s.progressbarTotal,
         progressbarDone: s.progressbarDone,
         news: s.news,
-        backgroundImage: s.backgroundImage
+        backgroundImage: s.backgroundImage,
+        onLaunchModalState: s.onLaunchModalState
       }));
     } else {
       window.alert(`Injection failed with error message: ${injectionResultText(result)}.`);
@@ -215,7 +277,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarTotal: 0,
       progressbarDone: 0,
       news: s.news,
-      backgroundImage: s.backgroundImage
+      backgroundImage: s.backgroundImage,
+      onLaunchModalState: s.onLaunchModalState
     }));
   }
 
@@ -226,7 +289,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarTotal: s.progressbarTotal,
       progressbarDone: s.progressbarTotal,
       news: s.news,
-      backgroundImage: s.backgroundImage
+      backgroundImage: s.backgroundImage,
+      onLaunchModalState: s.onLaunchModalState
     }));
   }
 
@@ -245,7 +309,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarTotal: s.progressbarTotal,
       progressbarDone: s.progressbarTotal,
       news: s.news,
-      backgroundImage: s.backgroundImage
+      backgroundImage: s.backgroundImage,
+      onLaunchModalState: s.onLaunchModalState
     }));
   }
 
@@ -277,8 +342,15 @@ export class App extends React.Component<AppProps, AppState> {
       <div style={mainAppDivStyle} className={'mainAppDiv'}>
         <div className={'infoButtonsDiv'}>
             <span>
+              <OnLaunchModal
+                status={this.state.onLaunchModalState}
+                news={this.state.news}
+                config={this.state.config}
+                launcherVersion={LAUNCHER_VERSION}
+                onModalButtonClick={(pth) => this.handleOnLaunchModelStateChange(null, null, pth)}
+              />
               <SettingsModal initialConfig={this.state.config} onSettingsFormSave={this.onSettingsFormSave} />
-              <InfoModal launcherVersion={1.0} />
+              <InfoModal launcherVersion={LAUNCHER_VERSION} />
               <Button compact size={'tiny'} icon onClick={this.onBtnMinimisePressed}>
                 <Icon fitted name='window minimize' />
               </Button>

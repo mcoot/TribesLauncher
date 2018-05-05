@@ -1,6 +1,8 @@
 import * as fs from 'fs-extra';
 import {Validator} from 'jsonschema';
 
+export const LAUNCHER_VERSION = 0.09;
+
 const launcherConfigSchema = {
     'type': 'object',
     'additionalProperties': false,

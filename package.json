@@ -7,7 +7,7 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package --platform=win32 --arch=ia32",
-    "make": "electron-forge make --platform=win32 --arch=ia32",
+    "make": "electron-forge make --platform=win32 --arch=ia32 --asar=true",
     "publish": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
     "updaterTest": "ts-node ./src/common/updaterTest.ts",
@@ -31,7 +31,8 @@
         ]
       },
       "electronPackagerConfig": {
-        "packageManager": "yarn"
+        "packageManager": "yarn",
+        "asar": true
       },
       "electronWinstallerConfig": {
         "name": "tribeslauncher"
@@ -98,6 +99,7 @@
     "babel-preset-react": "^6.24.1",
     "electron-forge": "^5.1.1",
     "electron-prebuilt-compile": "1.8.4",
+    "electron-winstaller": "^2.6.4",
     "ts-node": "^5.0.1",
     "tslint": "^5.1.0",
     "typescript": "^2.8.1"

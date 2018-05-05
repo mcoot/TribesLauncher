@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Header, Modal, Form, Input, Button, Icon } from 'semantic-ui-react';
+import { Header, Modal, Form, Input, Button, Icon, Grid } from 'semantic-ui-react';
 
 import { remote } from 'electron';
 
@@ -90,7 +90,7 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
 
     render() {
         return (
-            <Modal open={this.state.open} onClose={this.onFormClose} closeOnDimmerClick={false} size={'fullscreen'} trigger={
+            <Modal open={this.state.open} onClose={this.onFormClose} closeOnDimmerClick={false} size={'large'} trigger={
                     <Button compact size={'tiny'} icon onClick={this.onFormOpen}>
                     <Icon name='settings' />
                     </Button>}>
@@ -113,31 +113,30 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                             value={this.state.editedConfig.dllPath}
                             onChange={this.onFormChange} />
                         <Form.Group>
-                            <Form.Input
+                            {/* <Form.Input
                                 label='Tribes Process Name'
                                 name={'runningProcessName'}
                                 value={this.state.editedConfig.runningProcessName}
-                                onChange={this.onFormChange} />
+                                onChange={this.onFormChange} /> */}
                             <Form.Input
                                 label='Login Server Host'
                                 name={'masterServerHost'}
                                 value={this.state.editedConfig.masterServerHost}
                                 onChange={this.onFormChange} />
                         </Form.Group>
-                        <Header>Launcher Settings</Header>
                         <Form.Group>
-                            <Form.Button onClick={this.onFormClose} negative>
-                                <Icon name='cancel' />
-                                Cancel
+                            <Form.Button compact onClick={this.onFormClose} negative>
+                                    <Icon name='cancel' />
+                                    Cancel
                             </Form.Button>
-                            <Form.Button onClick={this.onFormSubmit} positive >
-                            <Icon name='save' />
+                            <Form.Button compact onClick={this.onFormSubmit} positive>
+                                <Icon name='save' />
                                 Save
                             </Form.Button>
                         </Form.Group>
-
                     </Form>
                 </Modal.Content>
+
             </Modal>
         );
     }
