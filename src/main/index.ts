@@ -14,7 +14,10 @@ const allowedCliOptions: commandLineArgs.OptionDefinition[] = [
   { name: 'dll', alias: 'd', type: String }
 ];
 
-// let launcherConfig: LauncherConfig | null = null;
+// Handle installer first-time run
+if (require('electron-squirrel-startup')) {
+  app.quit();
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -59,16 +62,21 @@ const createWindow = async () => {
     frame: false
   });
 
-  // Pass the config path to the renderer process
+  // Pass the appdata path to the renderer process
   // because can't get the userData path from the render process :'(
   // Also, have to stop ts from complaining about adding an extra field
   // @ts-ignore
   mainWindow.userDataPath = app.getPath('userData');
 
+  // Pass the user's config folder location to the renderer process
+  // @ts-ignore
+  mainWindow.userConfigPath = await TAModsUpdater.getConfigDirectory();
+
   // Also pass in argv - need to know how the main process was started
   // so that it can be started in injection mode on button press
   // @ts-ignore
   mainWindow.mainProcessArgv = process.argv;
+
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);

@@ -16,16 +16,17 @@ import * as ReactDOM from 'react-dom';
 import {AppContainer} from 'react-hot-loader';
 import { ipcRenderer, remote } from 'electron';
 
-let render = (userDataPath: string | null, mainProcessArgv: string[]) => {
+let render = (userDataPath: string | null, mainProcessArgv: string[], userConfigPath: string | null) => {
   const { App } = require('./components/app');
 
-  ReactDOM.render(<AppContainer><App userDataPath={userDataPath} mainProcessArgv={mainProcessArgv} /></AppContainer>, document.getElementById('App'));
+  ReactDOM.render(<AppContainer><App userDataPath={userDataPath} mainProcessArgv={mainProcessArgv} userConfigPath={userConfigPath} /></AppContainer>, document.getElementById('App'));
 }
 
 const userDataPath = remote.getCurrentWindow().userDataPath;
 const mainProcessArgv = remote.getCurrentWindow().mainProcessArgv;
+const userConfigPath = remote.getCurrentWindow().userConfigPath;
 
-render(userDataPath, mainProcessArgv);
+render(userDataPath, mainProcessArgv, userConfigPath);
 
 if (module.hot) { module.hot.accept(() => render(userDataPath, mainProcessArgv)); }
 </script>

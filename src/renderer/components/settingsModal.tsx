@@ -1,12 +1,15 @@
 import * as React from 'react';
-import { Header, Modal, Form, Input, Button, Icon, Grid } from 'semantic-ui-react';
+import { Header, Modal, Form, Input, Button, Icon, Grid, Divider } from 'semantic-ui-react';
 
+import { spawn } from 'child_process';
+import * as fs from 'fs-extra';
 import { remote } from 'electron';
 
 import { LauncherConfig } from '../../common/launcher-config';
 
 export interface SettingsModalProps {
     initialConfig: LauncherConfig;
+    userConfigPath: string | null;
     onSettingsFormSave: (updatedConfig: LauncherConfig) => void;
 }
 
@@ -88,6 +91,58 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
         event.preventDefault();
     }
 
+    onSetupUbermenuClick = async () => {
+        if (!this.props.userConfigPath) {
+            return;
+        }
+
+        // The config directory must already exist
+        if (!fs.pathExistsSync(this.props.userConfigPath)) {
+            return;
+        }
+
+        // Check for existing presets
+        if (fs.existsSync(`${this.props.userConfigPath}/config.lua`)) {
+            const existingConfig = await fs.readFile(`${this.props.userConfigPath}/config.lua`, 'utf8');
+            const existingRequires = existingConfig.split('\n').map((line: string) => {
+                const m = /^\s*require\("([\w\d\./]+)"\)/.exec(line);
+                if (!m) {
+                    return null;
+                }
+                return m[1];
+            }).filter(e => e);
+            const existingPresets = existingRequires.filter((req: string) => req.startsWith('presets/'));
+
+            // Check for ubermenu specifically
+            if (existingPresets.indexOf('presets/ubermenu/preset') !== -1) {
+                remote.dialog.showErrorBox('Error enabling Ubermenu', 'Ubermenu is already enabled in your config file.');
+                return;
+            }
+
+            // Don't set if other presets are active
+            if (existingPresets.length > 0) {
+                remote.dialog.showErrorBox('Error enabling Ubermenu',
+                'Other presets are already enabled in your config. Please enable Ubermenu manually or via the external config tool.');
+                return;
+            }
+        }
+
+        const configLua = `-- Ubermenu preset\nrequire("presets/ubermenu/preset")\n`;
+
+        await fs.appendFile(`${this.props.userConfigPath}/config.lua`, configLua);
+    }
+
+    onLaunchConfigToolClick = () => {
+        if (!fs.existsSync(this.state.editedConfig.configToolPath)) {
+            remote.dialog.showErrorBox('Config tool not found', 'Could not locate the configuration tool. You may need to update TAMods first.');
+            return;
+        }
+
+        // Launch the config tool completely detached
+        const child = spawn(this.state.editedConfig.configToolPath, [], { detached: true, stdio: 'ignore'});
+        child.unref();
+    }
+
     render() {
         return (
             <Modal open={this.state.open} onClose={this.onFormClose} closeOnDimmerClick={false} size={'large'} trigger={
@@ -99,7 +154,7 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                 </Modal.Header>
                 <Modal.Content>
                     <Form>
-                        <Header>Path Settings</Header>
+                        <Header>Launcher Settings</Header>
                         <Form.Input
                             label='Tribes Executable Path'
                             name={'mainExecutablePath'}
@@ -124,6 +179,12 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                                 value={this.state.editedConfig.masterServerHost}
                                 onChange={this.onFormChange} />
                         </Form.Group>
+                        <Header>TAMods Settings</Header>
+                        <Form.Group>
+                            <Button compact onClick={this.onSetupUbermenuClick}>Enable Ubermenu Preset</Button>
+                            <Button compact onClick={this.onLaunchConfigToolClick}>Launch External Config Tool</Button>
+                        </Form.Group>
+                        <Divider />
                         <Form.Group>
                             <Form.Button compact onClick={this.onFormClose} negative>
                                     <Icon name='cancel' />

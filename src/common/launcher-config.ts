@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import {Validator} from 'jsonschema';
 
-export const LAUNCHER_VERSION = 0.09;
+export const LAUNCHER_VERSION = 0.1;
 
 const launcherConfigSchema = {
     'type': 'object',
@@ -21,6 +21,9 @@ const launcherConfigSchema = {
             'type': 'string'
         },
         'dllPath': {
+            'type': 'string'
+        },
+        'configToolPath': {
             'type': 'string'
         },
         'masterServerHost': {
@@ -44,6 +47,8 @@ export interface LauncherConfig {
     runningProcessName: string;
     // The path to the DLL
     dllPath: string;
+    // The path to the external config tool
+    configToolPath: string;
 
     useDefaultExecutableArgs: boolean;
     // The master / login server to use for T:A
@@ -62,6 +67,7 @@ export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfi
         customExecutableArgs: [],
         runningProcessName: 'TribesAscend.exe',
         dllPath: `${userDataPath}/tamods.dll`,
+        configToolPath: `${userDataPath}/Config/TAModsConfigurationTool.exe`,
         masterServerHost: '45.33.99.115',
         releaseChannel: 'stable',
         updateUrl: 'https://raw.githubusercontent.com/mcoot/tamodsupdate/release'

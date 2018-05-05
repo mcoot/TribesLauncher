@@ -23,6 +23,7 @@ export enum LauncherState {
 
 export interface AppProps {
   userDataPath: string | null;
+  userConfigPath: string | null;
   mainProcessArgv: string[];
 }
 
@@ -349,7 +350,11 @@ export class App extends React.Component<AppProps, AppState> {
                 launcherVersion={LAUNCHER_VERSION}
                 onModalButtonClick={(pth) => this.handleOnLaunchModelStateChange(null, null, pth)}
               />
-              <SettingsModal initialConfig={this.state.config} onSettingsFormSave={this.onSettingsFormSave} />
+              <SettingsModal
+                initialConfig={this.state.config}
+                onSettingsFormSave={this.onSettingsFormSave}
+                userConfigPath={this.props.userConfigPath}
+              />
               <InfoModal launcherVersion={LAUNCHER_VERSION} />
               <Button compact size={'tiny'} icon onClick={this.onBtnMinimisePressed}>
                 <Icon fitted name='window minimize' />
