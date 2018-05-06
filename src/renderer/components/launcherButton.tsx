@@ -80,10 +80,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
                 this.props.onProcessLaunch();
                 break;
             case LauncherState.NEEDS_UPDATE:
-                let installPath = this.props.userDataPath;
-                if (!this.props.userDataPath) {
-                    installPath = '.';
-                }
+                const installPath = this.props.userDataPath || '.';
                 this.props.onUpdateStart();
                 ipcRenderer.send('update-start-request', [this.props.config.releaseChannel, installPath, this.props.config.updateUrl]);
                 break;

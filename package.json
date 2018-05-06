@@ -8,6 +8,7 @@
     "start": "electron-forge start",
     "package": "electron-forge package --platform=win32 --arch=ia32",
     "make": "electron-forge make --platform=win32 --arch=ia32 --asar=true",
+    "installer": "node createInstaller.js",
     "publish": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
     "updaterTest": "ts-node ./src/common/updaterTest.ts",
@@ -32,7 +33,8 @@
       },
       "electronPackagerConfig": {
         "packageManager": "yarn",
-        "asar": true
+        "asar": true,
+        "icon": "./src/main/icon.ico"
       },
       "electronWinstallerConfig": {
         "name": "tribeslauncher"

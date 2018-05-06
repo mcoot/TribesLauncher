@@ -69,7 +69,7 @@ class VersionManifest {
 
 export default class TAModsUpdater {
 
-    private static readonly versionFile: string = 'version.xml';
+    public static readonly versionFile: string = 'version.xml';
 
     private static parseXmlPromise(parser: any, data: string): Promise<any> {
         return new Promise((res, rej) => {
@@ -241,6 +241,40 @@ export default class TAModsUpdater {
 
         // Delete temp dir
         await rmfr(`${baseDir}/tmp`);
+    }
+
+    public static async uninstall(channel: string, baseDir: string): Promise<boolean> {
+        const configDir = await this.getConfigDirectory();
+
+        if (!fs.existsSync(`${baseDir}/${this.versionFile}`)) {
+            // Didn't uninstall because no version manifest found
+            return false;
+        }
+        const localManifest = await this.parseVersionManifestFile(`${baseDir}/${this.versionFile}`);
+
+        if (!localManifest.channels.get(channel)) {
+            return false;
+        }
+
+        // Delete the version manifest
+        fs.remove(`${baseDir}/${this.versionFile}`);
+
+        // Delete all the files
+        await Promise.all(localManifest.channels.get(channel)!.map(async (file) => {
+            let filePath;
+            if (file.root == RootLocation.CONFIG_DIRECTORY) {
+                let localPathArr = file.path.split(/[\/\\]/);
+                localPathArr.shift();
+                const localPath = localPathArr.join('/');
+                filePath = `${configDir}${localPath}`;
+            } else {
+                filePath = `${baseDir}/${file.path}`;
+            }
+
+            await fs.remove(filePath);
+        }));
+
+        return true;
     }
 
 }

@@ -9,12 +9,13 @@ function getInstallerConfig() {
 
     return Promise.resolve({
         appDirectory: path.join(outPath, 'tribeslauncher-win32-ia32'),
+        title: 'TribesLauncher',
         authors: 'mcoot',
-        version: '0.1.0',
         noMsi: true,
         outputDirectory: path.join(outPath, 'installer'),
         exe: 'tribeslauncher.exe',
         setupExe: 'TribesLauncherSetup.exe',
+        setupIcon: './src/main/icon.ico'
         // setupIcon: path.join(rootPath, 'assets', 'icons', 'win', 'icon.ico')
     });
 }

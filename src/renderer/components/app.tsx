@@ -120,6 +120,18 @@ export class App extends React.Component<AppProps, AppState> {
     }
   }
 
+  handleUninstallComplete = () => {
+    this.setState((s) => ({
+      config: s.config,
+      launcherState: LauncherState.NEEDS_UPDATE,
+      progressbarTotal: 0,
+      progressbarDone: 0,
+      news: s.news,
+      backgroundImage: s.backgroundImage,
+      onLaunchModalState: s.onLaunchModalState
+    }));
+  }
+
   handleUpdateTick = async (_: any, args: any[]) => {
     const msgKind: string = args[0];
 
@@ -354,7 +366,9 @@ export class App extends React.Component<AppProps, AppState> {
               <SettingsModal
                 initialConfig={this.state.config}
                 onSettingsFormSave={this.onSettingsFormSave}
+                userDataPath={this.props.userDataPath}
                 userConfigPath={this.props.userConfigPath}
+                onUninstallComplete={this.handleUninstallComplete}
               />
               <InfoModal launcherVersion={LAUNCHER_VERSION} />
               <Button compact size={'tiny'} icon onClick={this.onBtnMinimisePressed}>

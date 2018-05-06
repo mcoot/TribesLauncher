@@ -3,6 +3,7 @@ import * as commandLineArgs from 'command-line-args';
 import { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
+import * as path from 'path';
 
 import { InjectionResult, Injector } from '../common/injector';
 import TAModsUpdater from '../common/updater';
@@ -53,13 +54,15 @@ const createWindow = async () => {
 
   // Load the app configuration
   // launcherConfig = await loadLauncherConfig(`${app.getPath('userData')}/launcherConfig.json`);
+  console.log(__dirname);
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     resizable: false,
-    frame: false
+    frame: false,
+    icon: path.join(__dirname, 'icon.ico')
   });
 
   // Pass the appdata path to the renderer process
@@ -106,6 +109,11 @@ const createWindow = async () => {
   ipcMain.on('update-start-request', async (event: any, args: any) => {
     await TAModsUpdater.update(args[0], args[1], false, args[2], mainWindow);
     event.sender.send('update-finished-request');
+  });
+
+  ipcMain.on('uninstall-start-request', async (event: any, args: any) => {
+    await TAModsUpdater.uninstall(args[0], args[1]);
+    event.sender.send('uninstall-finished-request');
   });
 
   ipcMain.on('news-request', async (event: any, newsUrl: string) => {

@@ -3,14 +3,17 @@ import { Header, Modal, Form, Input, Button, Icon, Grid, Divider } from 'semanti
 
 import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
-import { remote } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 
 import { LauncherConfig } from '../../common/launcher-config';
+import TAModsUpdater from '../../common/updater';
 
 export interface SettingsModalProps {
     initialConfig: LauncherConfig;
+    userDataPath: string | null;
     userConfigPath: string | null;
     onSettingsFormSave: (updatedConfig: LauncherConfig) => void;
+    onUninstallComplete: () => void;
 }
 
 export interface SettingsModalState {
@@ -143,6 +146,37 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
         child.unref();
     }
 
+    onForceReinstallClick = async () => {
+        if (!fs.existsSync(`${this.props.userDataPath || '.'}/${TAModsUpdater.versionFile}`)) {
+            return;
+        }
+
+        const response = remote.dialog.showMessageBox({
+            type: 'warning',
+            title: 'Warning',
+            message: 'This will delete your local TAMods, which may cause the loss of some configuration settings. \
+                      Are you sure you want to proceed?',
+            buttons: ['Yes', 'No'],
+            cancelId: 1
+        });
+
+        if (response != 0) {
+            return;
+        }
+
+        // Call for deletion
+        ipcRenderer.once('uninstall-finished-request', () => {
+            this.props.onUninstallComplete();
+            remote.dialog.showMessageBox({
+                type: 'info',
+                title: 'Uninstall Complete',
+                message: 'Local TAMods installation has been deleted. Ready for re-install.'
+            });
+        });
+
+        ipcRenderer.send('uninstall-start-request', [this.props.initialConfig.releaseChannel, this.props.userDataPath || '.']);
+    }
+
     render() {
         return (
             <Modal open={this.state.open} onClose={this.onFormClose} closeOnDimmerClick={false} size={'large'} trigger={
@@ -183,6 +217,7 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                         <Form.Group>
                             <Button compact onClick={this.onSetupUbermenuClick}>Enable Ubermenu Preset</Button>
                             <Button compact onClick={this.onLaunchConfigToolClick}>Launch External Config Tool</Button>
+                            <Button compact onClick={this.onForceReinstallClick}>Force Reinstall</Button>
                         </Form.Group>
                         <Divider />
                         <Form.Group>
