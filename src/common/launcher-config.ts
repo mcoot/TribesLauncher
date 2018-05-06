@@ -8,6 +8,9 @@ const launcherConfigSchema = {
     'type': 'object',
     'additionalProperties': false,
     'properties': {
+        'launchViaSteam': {
+            'type': 'boolean'
+        },
         'mainExecutablePath': {
             'type': 'string'
         },
@@ -40,6 +43,7 @@ const launcherConfigSchema = {
 };
 
 export interface LauncherConfig {
+    launchViaSteam: boolean;
     // The path to the main executable
     mainExecutablePath: string;
     // Arguments to run the executable with
@@ -63,6 +67,7 @@ export interface LauncherConfig {
 
 export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfig => {
     return {
+        launchViaSteam: true,
         mainExecutablePath: 'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Tribes\\Binaries\\Win32\\TribesAscend.exe',
         useDefaultExecutableArgs: true,
         customExecutableArgs: [],

@@ -46,6 +46,9 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
     }
 
     private onFormChange = (_: any, {name, value}: {name: string, value: any}) => {
+        if (name === 'launchViaSteam') {
+            value = value !== 1;
+        }
         const newConfig = JSON.parse(JSON.stringify(this.state.editedConfig));
         newConfig[name] = value;
         this.setState((s) => ({
@@ -212,6 +215,13 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                                 name={'masterServerHost'}
                                 value={this.state.editedConfig.masterServerHost}
                                 onChange={this.onFormChange} />
+                            <Form.Checkbox
+                                onChange={this.onFormChange}
+                                name={'launchViaSteam'}
+                                label='Launch Via Steam'
+                                checked={this.state.editedConfig.launchViaSteam}
+                                value={this.state.editedConfig.launchViaSteam ? 1 : 0}
+                            />
                         </Form.Group>
                         <Header>TAMods Settings</Header>
                         <Form.Group>
