@@ -1,8 +1,16 @@
 import * as React from 'react';
-import { Dropdown, ButtonGroup, DropdownItemProps, Card, Embed } from 'semantic-ui-react';
+import { Dropdown, ButtonGroup, DropdownItemProps, Card, Embed, Segment, SegmentGroup, Header } from 'semantic-ui-react';
+import { remote, shell } from 'electron';
 
 import { LauncherNews,
          CommunityItem } from '../../common/launcher-news';
+
+export interface RedditPostData {
+    title: string;
+    author: string;
+    url: string;
+    date: Date;
+}
 
 export interface CommunityDisplayProps {
     news: LauncherNews | null;
@@ -10,6 +18,7 @@ export interface CommunityDisplayProps {
 
 export interface CommunityDisplayState {
     currentCommunityIndex: number;
+    redditData: RedditPostData[];
 }
 
 export class CommunityDisplay extends React.Component<CommunityDisplayProps, CommunityDisplayState> {
@@ -18,13 +27,19 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
         super(props);
 
         this.state = {
-            currentCommunityIndex: 0
+            currentCommunityIndex: 0,
+            redditData: []
         };
     }
 
     renderCommunityItem(item: CommunityItem | null): JSX.Element {
         const cardStyle = {
             height: '100%'
+        };
+
+        const cardBodyStyle = {
+            height: '100%',
+            overflow: 'auto'
         };
 
         const cardTemplate = (name: string, body: JSX.Element): JSX.Element => {
@@ -35,7 +50,7 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
                             {name}
                         </Card.Header>
                     </Card.Content>
-                    <Card.Content>
+                    <Card.Content style={cardBodyStyle}>
                         {body}
                     </Card.Content>
                 </Card>
@@ -52,7 +67,6 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
             case 'discord':
                 const embedStyle = {
                     height: '350px'
-                    // overflow: 'auto'
                 };
                 return cardTemplate(item.name, (
                     <Embed style={embedStyle} active
@@ -66,9 +80,29 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
                 ));
 
             case 'reddit':
-                return cardTemplate(item.name, (
-                    <span>Sub: /r/{item.sub}</span>
-                ));
+                // if (!this.state.redditData || this.state.redditData.length === 0) {
+                //     return cardTemplate(item.name, (
+                //         <span>Sub: /r/{item.sub}</span>
+                //     ));
+                // }
+
+                const redditSegmentStyle = {
+                    cursor: 'pointer'
+                };
+
+                const redditPosts = this.state.redditData.map((post, idx) => {
+                    return (
+                        <Segment key={idx} style={redditSegmentStyle} onClick={() => shell.openExternal(post.url)}>
+                            <Header size={'small'}>{post.title}</Header>
+                            <Header sub size={'small'}>{post.author}</Header>
+                        </Segment>
+                    );
+                });
+                return cardTemplate( item.name,
+                    <SegmentGroup>
+                        {redditPosts}
+                    </SegmentGroup>
+                );
 
             case 'iframe':
                 const iframeStyle = {
@@ -100,16 +134,35 @@ export class CommunityDisplay extends React.Component<CommunityDisplayProps, Com
         };
     }
 
-    OnDropdownSelect = (_: any, {value}: {value: number}): void => {
+    OnDropdownSelect = async (_: any, {value}: {value: number}): Promise<void> => {
         if (!this.props.news) {
             return;
         }
 
         const foundIndex = this.props.news.community.findIndex((item) => item.id == value);
 
-        this.setState((_) => ({
-            currentCommunityIndex: foundIndex
+        this.setState((s) => ({
+            currentCommunityIndex: foundIndex,
+            redditData: s.redditData
         }));
+
+        const foundItem = this.props.news.community[foundIndex];
+        if (foundItem.kind === 'reddit') {
+            const response = await window.fetch(`https://www.reddit.com/r/${foundItem.sub}/hot.json`);
+            const body = await response.json();
+
+            const redditPosts = body.data.children.filter((p: any) => !p.data.stickied).map((p: any) => ({
+                title: decodeURIComponent(p.data.title),
+                author: p.data.author,
+                url: `https://www.reddit.com${p.data.permalink}`,
+                date: new Date(p.data.created)
+            }));
+
+            this.setState((s) => ({
+                currentCommunityIndex: s.currentCommunityIndex,
+                redditData: redditPosts
+            }));
+        }
     }
 
     render() {
