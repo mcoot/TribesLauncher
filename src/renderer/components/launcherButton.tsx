@@ -51,6 +51,10 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
     }
 
     injectSafe = (): InjectionResult => {
+        if (this.props.launcherState !== LauncherState.LAUNCHED) {
+            return InjectionResult.UNKNOWN_ERROR;
+        }
+
         // const soundStart = new Howl({src: './assets/sound/phaserifle.wav'});
         const soundEnd = new Howl({src: './assets/sound/blueplate.wav'});
         // soundStart.play();
@@ -71,6 +75,9 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
     onButtonClick = async () => {
         switch (this.props.launcherState) {
             case LauncherState.LAUNCHED:
+                if (this.props.config.autoInjectEnabled) {
+                    break;
+                }
                 this.props.onInject(this.injectSafe());
                 break;
             case LauncherState.INJECTED:
@@ -83,6 +90,11 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
                 }
 
                 this.props.onProcessLaunch();
+
+                if (this.props.config.autoInjectEnabled) {
+                    // Auto-injection
+                    setTimeout(() => this.props.onInject(this.injectSafe()), (this.props.config.autoInjectTimer) * 1000);
+                }
                 break;
             case LauncherState.NEEDS_UPDATE:
                 const installPath = this.props.userDataPath || '.';
@@ -97,7 +109,12 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
         let isDisabled = false;
         switch (this.props.launcherState) {
             case LauncherState.LAUNCHED:
-                buttonText = 'Inject TAMods';
+                if (this.props.config.autoInjectEnabled) {
+                    buttonText = 'Auto-injecting...';
+                    isDisabled = true;
+                } else {
+                    buttonText = 'Inject TAMods';
+                }
                 break;
             case LauncherState.INJECTED:
                 buttonText = 'Injected!';

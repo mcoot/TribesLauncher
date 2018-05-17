@@ -46,9 +46,13 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
     }
 
     private onFormChange = (_: any, {name, value}: {name: string, value: any}) => {
-        if (name === 'launchViaSteam') {
+        if (name === 'launchViaSteam' || name === 'autoInjectEnabled') {
             value = value !== 1;
         }
+        if (name === 'autoInjectTimer') {
+            value = parseInt(value) || 20;
+        }
+
         const newConfig = JSON.parse(JSON.stringify(this.state.editedConfig));
         newConfig[name] = value;
         this.setState((s) => ({
@@ -215,13 +219,28 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                                 name={'masterServerHost'}
                                 value={this.state.editedConfig.masterServerHost}
                                 onChange={this.onFormChange} />
-                            <Form.Checkbox
-                                onChange={this.onFormChange}
-                                name={'launchViaSteam'}
-                                label='Launch Via Steam'
-                                checked={this.state.editedConfig.launchViaSteam}
-                                value={this.state.editedConfig.launchViaSteam ? 1 : 0}
-                            />
+                        </Form.Group>
+                        <Form.Checkbox
+                            onChange={this.onFormChange}
+                            name={'launchViaSteam'}
+                            label='Launch Via Steam'
+                            checked={this.state.editedConfig.launchViaSteam}
+                            value={this.state.editedConfig.launchViaSteam ? 1 : 0}
+                        />
+                        <Form.Checkbox
+                            onChange={this.onFormChange}
+                            name={'autoInjectEnabled'}
+                            label='Enable Auto-Inject'
+                            checked={this.state.editedConfig.autoInjectEnabled}
+                            value={this.state.editedConfig.autoInjectEnabled ? 1 : 0}
+                        />
+                        <Form.Group>
+                            <Form.Input
+                                type='number'
+                                label='Auto-Inject Timer'
+                                name={'autoInjectTimer'}
+                                value={this.state.editedConfig.autoInjectTimer}
+                                onChange={this.onFormChange} />
                         </Form.Group>
                         <Header>TAMods Settings</Header>
                         <Form.Group>

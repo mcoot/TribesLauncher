@@ -38,6 +38,12 @@ const launcherConfigSchema = {
         },
         'updateUrl': {
             'type': 'string'
+        },
+        'autoInjectEnabled': {
+            'type': 'boolean'
+        },
+        'autoInjectTimer': {
+            'type': 'number'
         }
     }
 };
@@ -63,6 +69,11 @@ export interface LauncherConfig {
 
     // Base URL to retrieve launcher updates from
     updateUrl: string;
+
+    // Whether to automatically inject TAMods after a timeout
+    autoInjectEnabled: boolean;
+    // Auto-inject timer
+    autoInjectTimer: number;
 }
 
 export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfig => {
@@ -76,7 +87,9 @@ export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfi
         configToolPath: `${userDataPath}/Config/TAModsConfigurationTool.exe`,
         masterServerHost: '45.33.99.115',
         releaseChannel: 'stable',
-        updateUrl: 'https://raw.githubusercontent.com/mcoot/tamodsupdate/release'
+        updateUrl: 'https://raw.githubusercontent.com/mcoot/tamodsupdate/release',
+        autoInjectEnabled: false,
+        autoInjectTimer: 20
     };
 };
 
