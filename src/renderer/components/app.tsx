@@ -43,7 +43,10 @@ export class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
 
-    const bgArr = ['arx-1', 'arx-2', 'arx-3', 'kata-1', 'kata-2', 'terminus-1'];
+    const bgArr = ['arx-1', 'arx-2', 'arx-3', 'kata-1', 'kata-2', 'terminus-1',
+                   'bella-1', 'bella-2', 'bella-3', 'bella-4', 'dd-1', 'dd-2', 'dx-1',
+                   'hellfire-1', 'perma-1', 'perma-2', 'raindance-1', 'raindance-2',
+                   'sunstar-1', 'sunstar-2', 'temple-1'];
     const bgIndex = Math.floor(Math.random() * bgArr.length);
 
     this.state = {
