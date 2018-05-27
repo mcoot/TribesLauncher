@@ -11,6 +11,7 @@ import { ipcRenderer, remote } from 'electron';
 import { NewsDisplay } from './newsDisplay';
 import { CommunityDisplay } from './communityDisplay';
 import { InfoModal } from './infoModal';
+import { ConfigureModal } from './configureModal';
 import { SettingsModal } from './settingsModal';
 import { OnLaunchModal, OnLaunchModelStatus } from './onLaunchModal';
 
@@ -64,7 +65,14 @@ export class App extends React.Component<AppProps, AppState> {
     window.addEventListener('beforeunload', this.componentCleanup);
     if (this.props.userDataPath) {
       // Load config
-      const loadedConfig = await loadLauncherConfig(`${this.props.userDataPath}/launcherConfig.json`, this.props.userDataPath);
+      let loadedConfig = generateDefaultConfig();
+      try {
+        loadedConfig = await loadLauncherConfig(`${this.props.userDataPath}/launcherConfig.json`, this.props.userDataPath);
+      } catch (err) {
+        remote.dialog.showErrorBox('Error loading configuration',
+              `Unable to load launcher configuration; default configuration restored. Error: ${err.message || err}`);
+      }
+
       this.setState((s) => ({
         config: loadedConfig,
         launcherState: s.launcherState,
@@ -366,14 +374,20 @@ export class App extends React.Component<AppProps, AppState> {
                 launcherVersion={LAUNCHER_VERSION}
                 onModalButtonClick={(pth) => this.handleOnLaunchModelStateChange(null, null, pth)}
               />
+              <ConfigureModal
+                config={this.state.config}
+                news={this.state.news}
+                userDataPath={this.props.userDataPath}
+                userConfigPath={this.props.userConfigPath}
+                onUninstallComplete={this.handleUninstallComplete}
+              />
               <SettingsModal
                 initialConfig={this.state.config}
                 onSettingsFormSave={this.onSettingsFormSave}
                 userDataPath={this.props.userDataPath}
                 userConfigPath={this.props.userConfigPath}
-                onUninstallComplete={this.handleUninstallComplete}
               />
-              <InfoModal launcherVersion={LAUNCHER_VERSION} />
+              <InfoModal launcherVersion={LAUNCHER_VERSION} news={this.state.news} />
               <Button compact size={'tiny'} icon onClick={this.onBtnMinimisePressed}>
                 <Icon fitted name='window minimize' />
               </Button>

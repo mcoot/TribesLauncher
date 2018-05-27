@@ -13,7 +13,7 @@ export interface SettingsModalProps {
     userDataPath: string | null;
     userConfigPath: string | null;
     onSettingsFormSave: (updatedConfig: LauncherConfig) => void;
-    onUninstallComplete: () => void;
+    // onUninstallComplete: () => void;
 }
 
 export interface SettingsModalState {
@@ -101,101 +101,101 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
         event.preventDefault();
     }
 
-    onSetupUbermenuClick = async () => {
-        if (!this.props.userConfigPath) {
-            return;
-        }
+    // onSetupUbermenuClick = async () => {
+    //     if (!this.props.userConfigPath) {
+    //         return;
+    //     }
 
-        // The config directory must already exist
-        if (!fs.pathExistsSync(this.props.userConfigPath)) {
-            return;
-        }
+    //     // The config directory must already exist
+    //     if (!fs.pathExistsSync(this.props.userConfigPath)) {
+    //         return;
+    //     }
 
-        // Check for existing presets
-        if (fs.existsSync(`${this.props.userConfigPath}/config.lua`)) {
-            const existingConfig = await fs.readFile(`${this.props.userConfigPath}/config.lua`, 'utf8');
-            const existingRequires = existingConfig.split('\n').map((line: string) => {
-                const m = /^\s*require\("([\w\d\./]+)"\)/.exec(line);
-                if (!m) {
-                    return null;
-                }
-                return m[1];
-            }).filter(e => e);
-            const existingPresets = existingRequires.filter((req: string) => req.startsWith('presets/'));
+    //     // Check for existing presets
+    //     if (fs.existsSync(`${this.props.userConfigPath}/config.lua`)) {
+    //         const existingConfig = await fs.readFile(`${this.props.userConfigPath}/config.lua`, 'utf8');
+    //         const existingRequires = existingConfig.split('\n').map((line: string) => {
+    //             const m = /^\s*require\("([\w\d\./]+)"\)/.exec(line);
+    //             if (!m) {
+    //                 return null;
+    //             }
+    //             return m[1];
+    //         }).filter(e => e);
+    //         const existingPresets = existingRequires.filter((req: string) => req.startsWith('presets/'));
 
-            // Check for ubermenu specifically
-            if (existingPresets.indexOf('presets/ubermenu/preset') !== -1) {
-                remote.dialog.showErrorBox('Error enabling Ubermenu', 'Ubermenu is already enabled in your config file.');
-                return;
-            }
+    //         // Check for ubermenu specifically
+    //         if (existingPresets.indexOf('presets/ubermenu/preset') !== -1) {
+    //             remote.dialog.showErrorBox('Error enabling Ubermenu', 'Ubermenu is already enabled in your config file.');
+    //             return;
+    //         }
 
-            // Don't set if other presets are active
-            if (existingPresets.length > 0) {
-                remote.dialog.showErrorBox('Error enabling Ubermenu',
-                'Other presets are already enabled in your config. Please enable Ubermenu manually or via the external config tool.');
-                return;
-            }
-        }
+    //         // Don't set if other presets are active
+    //         if (existingPresets.length > 0) {
+    //             remote.dialog.showErrorBox('Error enabling Ubermenu',
+    //             'Other presets are already enabled in your config. Please enable Ubermenu manually or via the external config tool.');
+    //             return;
+    //         }
+    //     }
 
-        const configLua = `-- Ubermenu preset\nrequire("presets/ubermenu/preset")\n`;
+    //     const configLua = `-- Ubermenu preset\nrequire("presets/ubermenu/preset")\n`;
 
-        await fs.appendFile(`${this.props.userConfigPath}/config.lua`, configLua);
-    }
+    //     await fs.appendFile(`${this.props.userConfigPath}/config.lua`, configLua);
+    // }
 
-    onLaunchConfigToolClick = () => {
-        if (!fs.existsSync(this.state.editedConfig.configToolPath)) {
-            remote.dialog.showErrorBox('Config tool not found', 'Could not locate the configuration tool. You may need to update TAMods first.');
-            return;
-        }
+    // onLaunchConfigToolClick = () => {
+    //     if (!fs.existsSync(this.state.editedConfig.configToolPath)) {
+    //         remote.dialog.showErrorBox('Config tool not found', 'Could not locate the configuration tool. You may need to update TAMods first.');
+    //         return;
+    //     }
 
-        // Launch the config tool completely detached
-        const child = spawn(this.state.editedConfig.configToolPath, [], { detached: true, stdio: 'ignore'});
-        child.unref();
-    }
+    //     // Launch the config tool completely detached
+    //     const child = spawn(this.state.editedConfig.configToolPath, [], { detached: true, stdio: 'ignore'});
+    //     child.unref();
+    // }
 
-    onForceReinstallClick = async () => {
-        if (!fs.existsSync(`${this.props.userDataPath || '.'}/${TAModsUpdater.versionFile}`)) {
-            return;
-        }
+    // onForceReinstallClick = async () => {
+    //     if (!fs.existsSync(`${this.props.userDataPath || '.'}/${TAModsUpdater.versionFile}`)) {
+    //         return;
+    //     }
 
-        const response = remote.dialog.showMessageBox({
-            type: 'warning',
-            title: 'Warning',
-            message: 'This will delete your local TAMods, which may cause the loss of some configuration settings. \
-                      Are you sure you want to proceed?',
-            buttons: ['Yes', 'No'],
-            cancelId: 1
-        });
+    //     const response = remote.dialog.showMessageBox({
+    //         type: 'warning',
+    //         title: 'Warning',
+    //         message: 'This will delete your local TAMods, which may cause the loss of some configuration settings. \
+    //                   Are you sure you want to proceed?',
+    //         buttons: ['Yes', 'No'],
+    //         cancelId: 1
+    //     });
 
-        if (response != 0) {
-            return;
-        }
+    //     if (response != 0) {
+    //         return;
+    //     }
 
-        // Call for deletion
-        ipcRenderer.once('uninstall-finished-request', () => {
-            this.props.onUninstallComplete();
-            remote.dialog.showMessageBox({
-                type: 'info',
-                title: 'Uninstall Complete',
-                message: 'Local TAMods installation has been deleted. Ready for re-install.'
-            });
-        });
+    //     // Call for deletion
+    //     ipcRenderer.once('uninstall-finished-request', () => {
+    //         this.props.onUninstallComplete();
+    //         remote.dialog.showMessageBox({
+    //             type: 'info',
+    //             title: 'Uninstall Complete',
+    //             message: 'Local TAMods installation has been deleted. Ready for re-install.'
+    //         });
+    //     });
 
-        ipcRenderer.send('uninstall-start-request', [this.props.initialConfig.releaseChannel, this.props.userDataPath || '.']);
-    }
+    //     ipcRenderer.send('uninstall-start-request', [this.props.initialConfig.releaseChannel, this.props.userDataPath || '.']);
+    // }
 
     render() {
         return (
             <Modal open={this.state.open} onClose={this.onFormClose} closeOnDimmerClick={false} size={'large'} trigger={
                     <Button compact size={'tiny'} icon onClick={this.onFormOpen}>
-                    <Icon name='settings' />
+                        <Icon name='settings' />
+                        Configure Launcher
                     </Button>}>
                 <Modal.Header>
-                    Settings
+                    Launcher Settings
                 </Modal.Header>
                 <Modal.Content>
                     <Form>
-                        <Header>Launcher Settings</Header>
                         <Form.Input
                             label='Tribes Executable Path'
                             name={'mainExecutablePath'}
@@ -242,12 +242,12 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                                 value={this.state.editedConfig.autoInjectTimer}
                                 onChange={this.onFormChange} />
                         </Form.Group>
-                        <Header>TAMods Settings</Header>
+                        {/* <Header>TAMods Settings</Header>
                         <Form.Group>
                             <Button compact onClick={this.onSetupUbermenuClick}>Enable Ubermenu Preset</Button>
                             <Button compact onClick={this.onLaunchConfigToolClick}>Launch External Config Tool</Button>
                             <Button compact onClick={this.onForceReinstallClick}>Force Reinstall</Button>
-                        </Form.Group>
+                        </Form.Group> */}
                         <Divider />
                         <Form.Group>
                             <Form.Button compact onClick={this.onFormClose} negative>

@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { Modal, Button, Icon } from 'semantic-ui-react';
 
+import { LauncherNews } from '../../common/launcher-news';
+
 export interface InfoModalProps {
     launcherVersion: string;
+    news: LauncherNews | null;
 }
 
 export interface InfoModelState {
@@ -31,8 +34,10 @@ export class InfoModal extends React.Component<InfoModalProps, InfoModelState> {
     }
 
     render() {
+        const updateLink = (this.props.news && this.props.news.launcherUpdateLink) || 'https://github.com/mcoot/TribesLauncher/releases';
+
         return (
-            <Modal closeOnDimmerClick={false} open={this.state.open} size={'tiny'} onClose={this.onClose} trigger={
+            <Modal closeOnDimmerClick={false} open={this.state.open} size={'small'} onClose={this.onClose} trigger={
                     <Button onClick={this.onOpen} compact size={'tiny'} icon>
                         <Icon  name='info' />
                     </Button>}>
@@ -41,7 +46,11 @@ export class InfoModal extends React.Component<InfoModalProps, InfoModelState> {
                 </Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
-                        TribesLauncher version {`${this.props.launcherVersion}`}, developed by mcoot.
+                        <p>Version <b>{`${this.props.launcherVersion}`}</b></p>
+                        <p>Developed by mcoot</p>
+                        <p>Get updates and view the source code at: <a href={updateLink}>{updateLink}</a></p>
+                        <p>For support, or to submit bug reports or feedback, either raise an issue on GitHub,
+                           or contact mcoot directly via Reddit (/u/avianistheterm) or Discord (mcoot#7419)</p>
                     </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>

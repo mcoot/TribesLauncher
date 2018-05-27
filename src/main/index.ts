@@ -3,6 +3,7 @@ import * as commandLineArgs from 'command-line-args';
 import { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
+import * as download from 'download';
 import * as path from 'path';
 
 import { InjectionResult, Injector } from '../common/injector';
@@ -114,6 +115,15 @@ const createWindow = async () => {
   ipcMain.on('uninstall-start-request', async (event: any, args: any) => {
     await TAModsUpdater.uninstall(args[0], args[1]);
     event.sender.send('uninstall-finished-request');
+  });
+
+  ipcMain.on('retrieve-ini-request', async (event: any, args: any) => {
+    try {
+      const result = await download(args[0]);
+      event.sender.send('retrieve-ini-finished', [true, result]);
+    } catch (err) {
+      event.sender.send('retrieve-ini-finished', [false, err]);
+    }
   });
 
   ipcMain.on('news-request', async (event: any, newsUrl: string) => {

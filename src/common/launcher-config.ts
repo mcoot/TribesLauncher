@@ -89,7 +89,7 @@ export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfi
         releaseChannel: 'stable',
         updateUrl: 'https://raw.githubusercontent.com/mcoot/tamodsupdate/release',
         autoInjectEnabled: false,
-        autoInjectTimer: 20
+        autoInjectTimer: 30
     };
 };
 

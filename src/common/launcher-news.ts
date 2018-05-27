@@ -45,6 +45,15 @@ export interface CommunityWeblink {
 
 export type CommunityItem = CommunityDiscord | CommunityMumble | CommunityReddit | CommunityIframe | CommunityWeblink;
 
+/////// INIs
+
+export interface IniPreset {
+    name: string;
+    category: string;
+    description: string;
+    remotePath: string;
+}
+
 /////// News
 
 export interface NewsItem {
@@ -59,6 +68,7 @@ export interface LauncherNews {
     community: CommunityItem[];
     latestLauncherVersion: string;
     launcherUpdateLink: string;
+    iniPresets: IniPreset[];
 }
 
 /////// Functions
@@ -71,5 +81,6 @@ export const downloadLauncherNews = async (newsUrl: string): Promise<LauncherNew
     }
 
     // Parse news to JSON - may throw exception if launcher news is invalid
-    return JSON.parse(newsBuffer.toString('utf8'));
+    const result = JSON.parse(newsBuffer.toString('utf8'));
+    return result;
 };
