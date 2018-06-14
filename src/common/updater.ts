@@ -187,7 +187,9 @@ export default class TAModsUpdater {
         if (!result) {
             throw new Error('Could not retrieve user Documents directory from the registry');
         }
-        return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
+
+        if(result.value.includes("%USERPROFILE%")) return `${require('os').homedir()}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\config\\`;
+        else return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
     }
 
     public static async update(channel: string, baseDir: string,
