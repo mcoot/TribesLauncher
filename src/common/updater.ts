@@ -3,6 +3,7 @@ const rmfr = require('rmfr');
 import * as download from 'download';
 import * as Registry from 'winreg';
 import { BrowserWindow } from 'electron';
+import { homedir } from 'os';
 
 const xml2js = require('xml2js');
 
@@ -188,8 +189,11 @@ export default class TAModsUpdater {
             throw new Error('Could not retrieve user Documents directory from the registry');
         }
 
-        if(result.value.includes("%USERPROFILE%")) return `${require('os').homedir()}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\config\\`;
-        else return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
+        if (result.value.includes('%USERPROFILE%')) {
+            return `${homedir()}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\config\\`;
+        } else {
+            return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
+        }
     }
 
     public static async update(channel: string, baseDir: string,

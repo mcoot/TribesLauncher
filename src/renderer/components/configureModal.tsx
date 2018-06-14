@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
-import { remote, ipcRenderer } from 'electron';
-import { Modal, Form, Icon, Button, Header, DropdownItemProps } from 'semantic-ui-react';
+import { remote, ipcRenderer, shell } from 'electron';
+import { Modal, Form, Icon, Button, Header, DropdownItemProps, FormGroup, Divider } from 'semantic-ui-react';
 import * as ini from 'ini';
 
 import { LauncherConfig } from '../../common/launcher-config';
@@ -343,6 +343,30 @@ export class ConfigureModal extends React.Component<ConfigureModalProps, Configu
         });
     }
 
+    onGotoConfigDirClick = () => {
+        if (this.props.userConfigPath) {
+            shell.openExternal(this.props.userConfigPath);
+        } else {
+            remote.dialog.showMessageBox({
+                type: 'error',
+                title: 'Error',
+                message: `Unable to locate configuration path`
+            });
+        }
+    }
+
+    onGotoInstallDirClick = () => {
+        if (this.props.userDataPath) {
+            shell.openExternal(this.props.userDataPath);
+        } else {
+            remote.dialog.showMessageBox({
+                type: 'error',
+                title: 'Error',
+                message: `Unable to locate install path`
+            });
+        }
+    }
+
     render() {
         const categoryOptions: DropdownItemProps[] = (this.props.news && (
             this.props.news.iniPresets
@@ -455,9 +479,16 @@ export class ConfigureModal extends React.Component<ConfigureModalProps, Configu
                     </Form.Group>
                 </Form> */}
                 <Header content='TAMods Settings'/>
-                <Button compact onClick={this.onSetupUbermenuClick}>Enable Ubermenu Preset</Button>
-                <Button compact onClick={this.onLaunchConfigToolClick}>Launch External Config Tool</Button>
-                <Button compact onClick={this.onForceReinstallClick}>Force Reinstall</Button>
+                <FormGroup>
+                    <Button compact onClick={this.onSetupUbermenuClick}>Enable Ubermenu Preset</Button>
+                    <Button compact onClick={this.onLaunchConfigToolClick}>Launch External Config Tool</Button>
+                    <Button compact onClick={this.onForceReinstallClick}>Force Reinstall</Button>
+                </FormGroup>
+                <Divider />
+                <FormGroup>
+                    <Button compact onClick={this.onGotoConfigDirClick}>Go to Config Directory</Button>
+                    <Button compact onClick={this.onGotoInstallDirClick}>Go to Install Directory</Button>
+                </FormGroup>
             </Modal.Content>
             <Modal.Actions>
                     <Button compact onClick={this.onModalClose}>
