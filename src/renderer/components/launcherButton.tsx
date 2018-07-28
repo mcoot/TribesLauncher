@@ -3,7 +3,7 @@ import { Button } from 'semantic-ui-react';
 import { LauncherState } from './app';
 import { LauncherConfig } from '../../common/launcher-config';
 import { Injector, InjectionResult } from '../../common/injector';
-import { ipcRenderer, shell } from 'electron';
+import { ipcRenderer } from 'electron';
 import { Howl } from 'howler';
 import * as fs from 'fs-extra';
 import { LauncherNews } from '../../common/launcher-news';
@@ -86,7 +86,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
                 break;
             case LauncherState.READY_TO_LAUNCH:
                 if (this.props.config.launchViaSteam) {
-                    shell.openExternal('steam://rungameid/17080');
+                    await Injector.startProcessSteam(this.props.news, this.props.config);
                 } else {
                     Injector.startProcess(this.props.news, this.props.config);
                 }

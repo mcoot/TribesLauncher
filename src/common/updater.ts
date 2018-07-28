@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 const rmfr = require('rmfr');
 import * as download from 'download';
 import * as Registry from 'winreg';
+import { lookupRegistry } from './regutils';
 import { BrowserWindow } from 'electron';
 import { homedir } from 'os';
 
@@ -165,34 +166,19 @@ export default class TAModsUpdater {
         }
     }
 
-    private static async regKeyValuesPromise(regKey: Registry.Registry): Promise<Registry.RegistryItem[]> {
-        return new Promise((res: (items: Registry.RegistryItem[]) => void, rej: (err: Error) => void) => {
-            regKey.values((err, items) => {
-                if (err) {
-                    rej(err);
-                } else {
-                    res(items);
-                }
-            });
-        });
-    }
-
     public static async getConfigDirectory(): Promise<string> {
-        const regKey = new Registry({
-            hive: Registry.HKCU,
-            key: '\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders'
-        });
-
-        const values = await this.regKeyValuesPromise(regKey);
-        const result = values.find((regItem) => regItem.name === 'Personal');
-        if (!result) {
+        const regItem = await lookupRegistry(
+            Registry.HKCU,
+            '\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders',
+            'Personal');
+        if (!regItem) {
             throw new Error('Could not retrieve user Documents directory from the registry');
         }
 
-        if (result.value.includes('%USERPROFILE%')) {
+        if (regItem.value.includes('%USERPROFILE%')) {
             return `${homedir()}\\Documents\\My Games\\Tribes Ascend\\TribesGame\\config\\`;
         } else {
-            return `${result.value}/my games/Tribes Ascend/TribesGame/config/`;
+            return `${regItem.value}/my games/Tribes Ascend/TribesGame/config/`;
         }
     }
 

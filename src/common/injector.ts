@@ -1,5 +1,8 @@
 import * as injector from 'node-dll-injector';
 import { spawn } from 'child_process';
+import { shell } from 'electron';
+import * as Registry from 'winreg';
+import { lookupRegistry } from './regutils';
 import * as fs from 'fs-extra';
 const isAdmin = require('is-admin');
 
@@ -62,6 +65,38 @@ export class Injector {
         }
 
         return args;
+    }
+
+    private static async lookupSteamExePath(): Promise<string | null> {
+        const regItem = await lookupRegistry(
+            Registry.HKCU,
+            '\\Software\\Valve\\Steam',
+            'SteamExe');
+        if (!regItem) {
+            return null;
+        }
+        return regItem.value;
+    }
+
+    public static async startProcessSteam(news: LauncherNews | null, config: LauncherConfig): Promise<void> {
+        const args = this.generateExecutableArgs(news, config);
+        const steamExe = await this.lookupSteamExePath();
+
+        if (steamExe) {
+            // Launch via steam directly (won't show warning prompt for custom args)
+            const child = spawn(steamExe, [
+                '-applaunch',
+                '17080',
+                ...args
+            ], {
+                detached: true,
+                stdio: 'ignore'
+            });
+            child.unref();
+        } else {
+            // Launch using Steam URL. Will show warning prompt for custom args
+            shell.openExternal(`steam://rungameid/17080//${args}`);
+        }
     }
 
     public static startProcess(news: LauncherNews | null, config: LauncherConfig): void {
