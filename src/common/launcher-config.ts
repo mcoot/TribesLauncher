@@ -30,6 +30,9 @@ const launcherConfigSchema = {
         'configToolPath': {
             'type': 'string'
         },
+        'masterServerMode': {
+            'type': 'number'
+        },
         'masterServerHost': {
             'type': 'string'
         },
@@ -48,6 +51,12 @@ const launcherConfigSchema = {
     }
 };
 
+export enum MasterServerMode {
+    HIREZ,
+    UNOFFICIAL,
+    CUSTOM
+}
+
 export interface LauncherConfig {
     launchViaSteam: boolean;
     // The path to the main executable
@@ -62,6 +71,10 @@ export interface LauncherConfig {
     configToolPath: string;
 
     useDefaultExecutableArgs: boolean;
+
+    // How to set the login server - hirez, unofficial or user-specified
+    masterServerMode: MasterServerMode;
+
     // The master / login server to use for T:A
     masterServerHost: string;
 
@@ -85,7 +98,8 @@ export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfi
         runningProcessName: 'TribesAscend.exe',
         dllPath: `${userDataPath}/tamods.dll`,
         configToolPath: `${userDataPath}/Config/TAModsConfigurationTool.exe`,
-        masterServerHost: '45.33.99.115',
+        masterServerMode: MasterServerMode.HIREZ,
+        masterServerHost: '23.239.17.171',
         releaseChannel: 'stable',
         updateUrl: 'https://raw.githubusercontent.com/mcoot/tamodsupdate/release',
         autoInjectEnabled: false,

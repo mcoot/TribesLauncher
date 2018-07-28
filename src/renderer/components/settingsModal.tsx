@@ -1,15 +1,14 @@
 import * as React from 'react';
-import { Header, Modal, Form, Input, Button, Icon, Grid, Divider } from 'semantic-ui-react';
+import { Label, Header, Modal, Form, Input, Button, Icon, Grid, Divider } from 'semantic-ui-react';
 
-import { spawn } from 'child_process';
-import * as fs from 'fs-extra';
-import { remote, ipcRenderer } from 'electron';
+import { remote } from 'electron';
 
-import { LauncherConfig } from '../../common/launcher-config';
-import TAModsUpdater from '../../common/updater';
+import { LauncherConfig, MasterServerMode } from '../../common/launcher-config';
+import { LauncherNews } from '../../common/launcher-news';
 
 export interface SettingsModalProps {
     initialConfig: LauncherConfig;
+    launcherNews: LauncherNews | null;
     userDataPath: string | null;
     userConfigPath: string | null;
     onSettingsFormSave: (updatedConfig: LauncherConfig) => void;
@@ -101,89 +100,6 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
         event.preventDefault();
     }
 
-    // onSetupUbermenuClick = async () => {
-    //     if (!this.props.userConfigPath) {
-    //         return;
-    //     }
-
-    //     // The config directory must already exist
-    //     if (!fs.pathExistsSync(this.props.userConfigPath)) {
-    //         return;
-    //     }
-
-    //     // Check for existing presets
-    //     if (fs.existsSync(`${this.props.userConfigPath}/config.lua`)) {
-    //         const existingConfig = await fs.readFile(`${this.props.userConfigPath}/config.lua`, 'utf8');
-    //         const existingRequires = existingConfig.split('\n').map((line: string) => {
-    //             const m = /^\s*require\("([\w\d\./]+)"\)/.exec(line);
-    //             if (!m) {
-    //                 return null;
-    //             }
-    //             return m[1];
-    //         }).filter(e => e);
-    //         const existingPresets = existingRequires.filter((req: string) => req.startsWith('presets/'));
-
-    //         // Check for ubermenu specifically
-    //         if (existingPresets.indexOf('presets/ubermenu/preset') !== -1) {
-    //             remote.dialog.showErrorBox('Error enabling Ubermenu', 'Ubermenu is already enabled in your config file.');
-    //             return;
-    //         }
-
-    //         // Don't set if other presets are active
-    //         if (existingPresets.length > 0) {
-    //             remote.dialog.showErrorBox('Error enabling Ubermenu',
-    //             'Other presets are already enabled in your config. Please enable Ubermenu manually or via the external config tool.');
-    //             return;
-    //         }
-    //     }
-
-    //     const configLua = `-- Ubermenu preset\nrequire("presets/ubermenu/preset")\n`;
-
-    //     await fs.appendFile(`${this.props.userConfigPath}/config.lua`, configLua);
-    // }
-
-    // onLaunchConfigToolClick = () => {
-    //     if (!fs.existsSync(this.state.editedConfig.configToolPath)) {
-    //         remote.dialog.showErrorBox('Config tool not found', 'Could not locate the configuration tool. You may need to update TAMods first.');
-    //         return;
-    //     }
-
-    //     // Launch the config tool completely detached
-    //     const child = spawn(this.state.editedConfig.configToolPath, [], { detached: true, stdio: 'ignore'});
-    //     child.unref();
-    // }
-
-    // onForceReinstallClick = async () => {
-    //     if (!fs.existsSync(`${this.props.userDataPath || '.'}/${TAModsUpdater.versionFile}`)) {
-    //         return;
-    //     }
-
-    //     const response = remote.dialog.showMessageBox({
-    //         type: 'warning',
-    //         title: 'Warning',
-    //         message: 'This will delete your local TAMods, which may cause the loss of some configuration settings. \
-    //                   Are you sure you want to proceed?',
-    //         buttons: ['Yes', 'No'],
-    //         cancelId: 1
-    //     });
-
-    //     if (response != 0) {
-    //         return;
-    //     }
-
-    //     // Call for deletion
-    //     ipcRenderer.once('uninstall-finished-request', () => {
-    //         this.props.onUninstallComplete();
-    //         remote.dialog.showMessageBox({
-    //             type: 'info',
-    //             title: 'Uninstall Complete',
-    //             message: 'Local TAMods installation has been deleted. Ready for re-install.'
-    //         });
-    //     });
-
-    //     ipcRenderer.send('uninstall-start-request', [this.props.initialConfig.releaseChannel, this.props.userDataPath || '.']);
-    // }
-
     render() {
         return (
             <Modal open={this.state.open} onClose={this.onFormClose} closeOnDimmerClick={false} size={'large'} trigger={
@@ -208,15 +124,41 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                             action={{icon: 'folder open', onClick: this.onDLLPathFileClick}}
                             value={this.state.editedConfig.dllPath}
                             onChange={this.onFormChange} />
+                        <Header as='h5' content='Login Server'/>
                         <Form.Group>
                             {/* <Form.Input
                                 label='Tribes Process Name'
                                 name={'runningProcessName'}
                                 value={this.state.editedConfig.runningProcessName}
                                 onChange={this.onFormChange} /> */}
+                            <Form.Radio
+                                label='HiRez'
+                                name='masterServerMode'
+                                value={MasterServerMode.HIREZ}
+                                checked={this.state.editedConfig.masterServerMode === MasterServerMode.HIREZ}
+                                onChange={this.onFormChange}
+                            />
+                            <Form.Radio
+                                label='Unofficial'
+                                name='masterServerMode'
+                                value={MasterServerMode.UNOFFICIAL}
+                                disabled={this.props.launcherNews
+                                            && (this.props.launcherNews.masterServers.unofficialMasterServerHost === '')
+                                            || false}
+                                checked={this.state.editedConfig.masterServerMode === MasterServerMode.UNOFFICIAL}
+                                onChange={this.onFormChange}
+                            />
+                            <Form.Radio
+                                label='Custom'
+                                name='masterServerMode'
+                                value={MasterServerMode.CUSTOM}
+                                checked={this.state.editedConfig.masterServerMode === MasterServerMode.CUSTOM}
+                                onChange={this.onFormChange}
+                            />
                             <Form.Input
                                 label='Login Server Host'
                                 name={'masterServerHost'}
+                                disabled={this.state.editedConfig.masterServerMode !== MasterServerMode.CUSTOM}
                                 value={this.state.editedConfig.masterServerHost}
                                 onChange={this.onFormChange} />
                         </Form.Group>

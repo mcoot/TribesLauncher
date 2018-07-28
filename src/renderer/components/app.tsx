@@ -383,6 +383,7 @@ export class App extends React.Component<AppProps, AppState> {
               />
               <SettingsModal
                 initialConfig={this.state.config}
+                launcherNews={this.state.news}
                 onSettingsFormSave={this.onSettingsFormSave}
                 userDataPath={this.props.userDataPath}
                 userConfigPath={this.props.userConfigPath}
@@ -413,6 +414,7 @@ export class App extends React.Component<AppProps, AppState> {
           </div>
           <div className={'launcherButtonContainerDiv'}>
             <LauncherButton
+                  news={this.state.news}
                   config={this.state.config}
                   mainProcessArgv={this.props.mainProcessArgv}
                   launcherState={this.state.launcherState}

@@ -3,7 +3,8 @@ import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
 const isAdmin = require('is-admin');
 
-import { LauncherConfig } from './launcher-config';
+import { LauncherConfig, MasterServerMode } from './launcher-config';
+import { LauncherNews } from './launcher-news';
 
 export enum InjectionResult {
     SUCCESSFUL = 0,
@@ -37,11 +38,23 @@ export function injectionResultText(result: InjectionResult) {
 }
 
 export class Injector {
-    private static generateExecutableArgs(config: LauncherConfig) {
+    private static generateExecutableArgs(news: LauncherNews | null, config: LauncherConfig) {
         let args: string[] = [];
 
         if (config.useDefaultExecutableArgs) {
-            args.push(`-hostx=${config.masterServerHost}`);
+            let loginHost: string = config.masterServerHost;
+            if (news) {
+                switch (config.masterServerMode) {
+                    case MasterServerMode.HIREZ:
+                    loginHost = news.masterServers.hirezMasterServerHost;
+                    break;
+                    case MasterServerMode.UNOFFICIAL:
+                    loginHost = news.masterServers.unofficialMasterServerHost;
+                    break;
+                }
+            }
+
+            args.push(`-hostx=${loginHost}`);
         }
 
         if (config.customExecutableArgs.length > 0) {
@@ -51,10 +64,10 @@ export class Injector {
         return args;
     }
 
-    public static startProcess(config: LauncherConfig): void {
+    public static startProcess(news: LauncherNews | null, config: LauncherConfig): void {
         // Start the child properly detached
         // i.e. don't connect stdio, unref() to remove from node's reference counter
-        const child = spawn(config.mainExecutablePath, this.generateExecutableArgs(config), {
+        const child = spawn(config.mainExecutablePath, this.generateExecutableArgs(news, config), {
             detached: true,
             stdio: 'ignore'
         });

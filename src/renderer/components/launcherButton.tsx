@@ -6,10 +6,12 @@ import { Injector, InjectionResult } from '../../common/injector';
 import { ipcRenderer, shell } from 'electron';
 import { Howl } from 'howler';
 import * as fs from 'fs-extra';
+import { LauncherNews } from '../../common/launcher-news';
 
 const runas = require('runas');
 
 export interface LauncherButtonProps {
+    news: LauncherNews | null;
     config: LauncherConfig;
     mainProcessArgv: string[];
     launcherState: LauncherState;
@@ -86,7 +88,7 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
                 if (this.props.config.launchViaSteam) {
                     shell.openExternal('steam://rungameid/17080');
                 } else {
-                    Injector.startProcess(this.props.config);
+                    Injector.startProcess(this.props.news, this.props.config);
                 }
 
                 this.props.onProcessLaunch();

@@ -54,6 +54,20 @@ export interface IniPreset {
     remotePath: string;
 }
 
+/////// Server hosts
+
+export interface CustomMasterServerHost {
+    name: string;
+    host: string;
+}
+
+export interface MasterServersConfig {
+    hirezMasterServerHost: string;
+    unofficialMasterServerHost: string;
+    shouldDefaultToHirezMasterServer: boolean;
+    alternateMasterServerHosts: CustomMasterServerHost[];
+}
+
 /////// News
 
 export interface NewsItem {
@@ -68,6 +82,7 @@ export interface LauncherNews {
     community: CommunityItem[];
     latestLauncherVersion: string;
     launcherUpdateLink: string;
+    masterServers: MasterServersConfig;
     iniPresets: IniPreset[];
 }
 
@@ -81,6 +96,6 @@ export const downloadLauncherNews = async (newsUrl: string): Promise<LauncherNew
     }
 
     // Parse news to JSON - may throw exception if launcher news is invalid
-    const result = JSON.parse(newsBuffer.toString('utf8'));
+    const result: LauncherNews = JSON.parse(newsBuffer.toString('utf8'));
     return result;
 };
