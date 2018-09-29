@@ -12,7 +12,8 @@ import { downloadLauncherNews } from '../common/launcher-news';
 
 const allowedCliOptions: commandLineArgs.OptionDefinition[] = [
   { name: 'inject', alias: 'i', type: Boolean },
-  { name: 'process', alias: 'p', type: String },
+  { name: 'pid', alias: 'p', type: Number },
+  { name: 'processname', alias: 'n', type: String },
   { name: 'dll', alias: 'd', type: String }
 ];
 
@@ -43,11 +44,18 @@ const createWindow = async () => {
   }
 
   if ('inject' in cliOptions) {
-    if (!('process' in cliOptions) || !('dll' in cliOptions)) {
-      process.exit(InjectionResult.MISSING_ARGUMENTS);
+    // Should specify dll path, and exactly one of pid, processname
+    if (!('dll' in cliOptions) || (('pid' in cliOptions) == ('processname' in cliOptions))) {
+      process.exit(InjectionResult.WRONG_NUMBER_OF_ARGUMENTS);
     } else {
-      console.log(`Injecting dll ${cliOptions.dll} into process ${cliOptions.process}`);
-      const result: InjectionResult = await Injector.inject(cliOptions.process, cliOptions.dll);
+      let result: InjectionResult;
+      if ('pid' in cliOptions) {
+        console.log(`Injecting dll ${cliOptions.dll} into process with pid ${cliOptions.pid}`);
+        result = await Injector.injectByPID(cliOptions.pid, cliOptions.dll);
+      } else {
+        console.log(`Injecting dll ${cliOptions.dll} into process with name ${cliOptions.processname}`);
+        result = await Injector.injectByName(cliOptions.processname, cliOptions.dll);
+      }
       console.log(`Injection completed with code: ${result}`);
       process.exit(result);
     }
@@ -80,7 +88,6 @@ const createWindow = async () => {
   // so that it can be started in injection mode on button press
   // @ts-ignore
   mainWindow.mainProcessArgv = process.argv;
-
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);

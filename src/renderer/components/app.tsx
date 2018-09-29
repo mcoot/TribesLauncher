@@ -37,6 +37,7 @@ export interface AppState {
   news: LauncherNews | null;
   backgroundImage: string;
   onLaunchModalState: OnLaunchModelStatus;
+  runningReference: number | string | null;
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -57,7 +58,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarDone: 0,
       news: null,
       backgroundImage: bgArr[bgIndex],
-      onLaunchModalState: OnLaunchModelStatus.NOT_OPENED
+      onLaunchModalState: OnLaunchModelStatus.NOT_OPENED,
+      runningReference: null
     };
   }
 
@@ -80,7 +82,8 @@ export class App extends React.Component<AppProps, AppState> {
         progressbarDone: s.progressbarDone,
         news: s.news,
         backgroundImage: s.backgroundImage,
-        onLaunchModalState: s.onLaunchModalState
+        onLaunchModalState: s.onLaunchModalState,
+        runningReference: s.runningReference
       }));
       if (this.state.onLaunchModalState === OnLaunchModelStatus.NOT_OPENED) {
         this.handleOnLaunchModelStateChange(loadedConfig, null);
@@ -126,7 +129,8 @@ export class App extends React.Component<AppProps, AppState> {
         progressbarDone: 0,
         news: s.news,
         backgroundImage: s.backgroundImage,
-        onLaunchModalState: s.onLaunchModalState
+        onLaunchModalState: s.onLaunchModalState,
+        runningReference: s.runningReference
       }));
     }
   }
@@ -139,7 +143,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarDone: 0,
       news: s.news,
       backgroundImage: s.backgroundImage,
-      onLaunchModalState: s.onLaunchModalState
+      onLaunchModalState: s.onLaunchModalState,
+      runningReference: s.runningReference
     }));
   }
 
@@ -156,7 +161,8 @@ export class App extends React.Component<AppProps, AppState> {
           progressbarDone: s.progressbarDone,
           news: s.news,
           backgroundImage: s.backgroundImage,
-          onLaunchModalState: s.onLaunchModalState
+          onLaunchModalState: s.onLaunchModalState,
+          runningReference: s.runningReference
         }));
         break;
       case 'file-finished':
@@ -168,7 +174,8 @@ export class App extends React.Component<AppProps, AppState> {
           progressbarDone: s.progressbarDone + 1,
           news: s.news,
           backgroundImage: s.backgroundImage,
-          onLaunchModalState: s.onLaunchModalState
+          onLaunchModalState: s.onLaunchModalState,
+          runningReference: s.runningReference
         }));
         break;
     }
@@ -184,7 +191,8 @@ export class App extends React.Component<AppProps, AppState> {
         progressbarTotal: s.progressbarTotal,
         news: retrievedNews,
         backgroundImage: s.backgroundImage,
-        onLaunchModalState: s.onLaunchModalState
+        onLaunchModalState: s.onLaunchModalState,
+        runningReference: s.runningReference
       }));
       if (this.state.onLaunchModalState === OnLaunchModelStatus.NOT_OPENED) {
         this.handleOnLaunchModelStateChange(null, retrievedNews);
@@ -231,11 +239,12 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarTotal: s.progressbarTotal,
       news: s.news,
       backgroundImage: s.backgroundImage,
-      onLaunchModalState: newModalState
+      onLaunchModalState: newModalState,
+      runningReference: s.runningReference
     }));
   }
 
-  onGameLaunch = (): void => {
+  onGameLaunch = (ref: number | string): void => {
     this.setState((s) => ({
       config: s.config,
       launcherState: LauncherState.LAUNCHED,
@@ -243,40 +252,39 @@ export class App extends React.Component<AppProps, AppState> {
         progressbarDone: s.progressbarDone,
         news: s.news,
         backgroundImage: s.backgroundImage,
-        onLaunchModalState: s.onLaunchModalState
+        onLaunchModalState: s.onLaunchModalState,
+        runningReference: ref
     }));
   }
 
   onProcessStatusUpdate = (running: boolean): void => {
+    let newLauncherState: LauncherState | null = null;
+    let processDied = false;
     switch (this.state.launcherState) {
       case LauncherState.READY_TO_LAUNCH:
         if (running) {
-          this.setState((s) => ({
-            config: s.config,
-            launcherState: LauncherState.LAUNCHED,
-            progressbarTotal: s.progressbarTotal,
-            progressbarDone: s.progressbarDone,
-            news: s.news,
-            backgroundImage: s.backgroundImage,
-            onLaunchModalState: s.onLaunchModalState
-          }));
+          newLauncherState = LauncherState.LAUNCHED;
         }
         break;
       case LauncherState.LAUNCHED:
       case LauncherState.INJECTED:
         if (!running) {
-          this.setState((s) => ({
-            config: s.config,
-            launcherState: LauncherState.READY_TO_LAUNCH,
-            progressbarTotal: s.progressbarTotal,
-            progressbarDone: s.progressbarDone,
-            news: s.news,
-            backgroundImage: s.backgroundImage,
-            onLaunchModalState: s.onLaunchModalState
-          }));
+          newLauncherState = LauncherState.READY_TO_LAUNCH;
+          processDied = true;
         }
         break;
     }
+
+    this.setState((s) => ({
+      config: s.config,
+      launcherState: newLauncherState || s.launcherState,
+      progressbarTotal: s.progressbarTotal,
+      progressbarDone: s.progressbarDone,
+      news: s.news,
+      backgroundImage: s.backgroundImage,
+      onLaunchModalState: s.onLaunchModalState,
+      runningReference: processDied ? null : s.runningReference
+    }));
   }
 
   onDLLInject = (result: InjectionResult): void => {
@@ -288,10 +296,11 @@ export class App extends React.Component<AppProps, AppState> {
         progressbarDone: s.progressbarDone,
         news: s.news,
         backgroundImage: s.backgroundImage,
-        onLaunchModalState: s.onLaunchModalState
+        onLaunchModalState: s.onLaunchModalState,
+        runningReference: s.runningReference
       }));
     } else {
-      window.alert(`Injection failed with error message: ${injectionResultText(result)}.`);
+      window.alert(`Injection failed with error ${result}: ${injectionResultText(result)}.`);
     }
   }
 
@@ -303,7 +312,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarDone: 0,
       news: s.news,
       backgroundImage: s.backgroundImage,
-      onLaunchModalState: s.onLaunchModalState
+      onLaunchModalState: s.onLaunchModalState,
+      runningReference: s.runningReference
     }));
   }
 
@@ -315,7 +325,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarDone: s.progressbarTotal,
       news: s.news,
       backgroundImage: s.backgroundImage,
-      onLaunchModalState: s.onLaunchModalState
+      onLaunchModalState: s.onLaunchModalState,
+      runningReference: s.runningReference
     }));
   }
 
@@ -335,7 +346,8 @@ export class App extends React.Component<AppProps, AppState> {
       progressbarDone: s.progressbarTotal,
       news: s.news,
       backgroundImage: s.backgroundImage,
-      onLaunchModalState: s.onLaunchModalState
+      onLaunchModalState: s.onLaunchModalState,
+      runningReference: s.runningReference
     }));
   }
 
@@ -418,6 +430,7 @@ export class App extends React.Component<AppProps, AppState> {
                   config={this.state.config}
                   mainProcessArgv={this.props.mainProcessArgv}
                   launcherState={this.state.launcherState}
+                  runningReference={this.state.runningReference}
                   userDataPath={this.props.userDataPath}
                   onProcessLaunch={this.onGameLaunch}
                   onProcessStatusUpdate={this.onProcessStatusUpdate}

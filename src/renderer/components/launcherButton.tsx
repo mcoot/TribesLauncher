@@ -15,9 +15,10 @@ export interface LauncherButtonProps {
     config: LauncherConfig;
     mainProcessArgv: string[];
     launcherState: LauncherState;
+    runningReference: number | string | null;
     userDataPath: string | null;
     onProcessStatusUpdate: (running: boolean) => void;
-    onProcessLaunch: () => void;
+    onProcessLaunch: (reference: number | string) => void;
     onInject: (result: InjectionResult) => void;
     onUpdateStart: () => void;
     onUpdateComplete: () => void;
@@ -49,21 +50,33 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
     }
 
     pollProcessStatus = () => {
-        this.props.onProcessStatusUpdate(Injector.isProcessRunning(this.props.config.runningProcessName));
+        if (this.props.runningReference) {
+            let isRunning;
+            if (typeof this.props.runningReference === 'number') {
+                isRunning = Injector.isProcessRunningByPID(this.props.runningReference);
+            } else {
+                isRunning = Injector.isProcessRunningByName(this.props.runningReference);
+            }
+            console.log(`Polled for process ${this.props.runningReference}, it is ${isRunning ? 'running' : 'not running'}`);
+            this.props.onProcessStatusUpdate(isRunning);
+        }
     }
 
     injectSafe = (): InjectionResult => {
-        if (this.props.launcherState !== LauncherState.LAUNCHED) {
-            return InjectionResult.UNKNOWN_ERROR;
+        if (this.props.runningReference === null) {
+            return InjectionResult.PROCESS_NOT_RUNNING;
         }
 
         // const soundStart = new Howl({src: './assets/sound/phaserifle.wav'});
         const soundEnd = new Howl({src: './assets/sound/blueplate.wav'});
         // soundStart.play();
         let args = this.props.mainProcessArgv.slice(1);
-            args.push('--', '--inject',
-                      '--process', this.props.config.runningProcessName,
-                      '--dll', this.props.config.dllPath);
+        args.push('--', '--inject', '--dll', this.props.config.dllPath);
+        if (typeof this.props.runningReference === 'number') {
+            args.push('--pid', this.props.runningReference.toString());
+        } else {
+            args.push('--processname', this.props.runningReference);
+        }
         const result: InjectionResult = runas(this.props.mainProcessArgv[0], args, {
             admin: true,
             hide: true
@@ -85,13 +98,20 @@ export class LauncherButton extends React.Component<LauncherButtonProps, Launche
             case LauncherState.INJECTED:
                 break;
             case LauncherState.READY_TO_LAUNCH:
+                let res: number | string | null;
                 if (this.props.config.launchViaSteam) {
-                    await Injector.startProcessSteam(this.props.news, this.props.config);
+                    res = await Injector.startProcessSteam(this.props.news, this.props.config);
+                    // console.log(`Process started: ${res}`);
                 } else {
-                    Injector.startProcess(this.props.news, this.props.config);
+                    res = Injector.startProcess(this.props.news, this.props.config);
                 }
 
-                this.props.onProcessLaunch();
+                if (res === null) {
+                    // Failed to start
+                    return;
+                }
+
+                this.props.onProcessLaunch(res);
 
                 if (this.props.config.autoInjectEnabled) {
                     // Auto-injection
