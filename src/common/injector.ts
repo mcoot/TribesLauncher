@@ -81,6 +81,10 @@ export class Injector {
             args.push(`-hostx=${loginHost}`);
         }
 
+        if (config.launchWithGOTYFlag) {
+            args.push('-goty');
+        }
+
         if (config.customExecutableArgs.length > 0) {
             config.customExecutableArgs.forEach((arg) => args.push(arg));
         }

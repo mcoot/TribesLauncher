@@ -47,7 +47,10 @@ const launcherConfigSchema = {
         },
         'autoInjectTimer': {
             'type': 'number'
-        }
+        },
+        'launchWithGOTYFlag': {
+            'type': 'boolean'
+        },
     }
 };
 
@@ -78,6 +81,9 @@ export interface LauncherConfig {
     // The master / login server to use for T:A
     masterServerHost: string;
 
+    // Whether to pass the -goty flag to the game process
+    launchWithGOTYFlag: boolean;
+
     releaseChannel: string;
 
     // Base URL to retrieve launcher updates from
@@ -100,6 +106,7 @@ export const generateDefaultConfig = (userDataPath: string = '.'): LauncherConfi
         configToolPath: `${userDataPath}/Config/TAModsConfigurationTool.exe`,
         masterServerMode: MasterServerMode.HIREZ,
         masterServerHost: '23.239.17.171',
+        launchWithGOTYFlag: false,
         releaseChannel: 'stable',
         updateUrl: 'https://raw.githubusercontent.com/mcoot/tamodsupdate/release',
         autoInjectEnabled: false,

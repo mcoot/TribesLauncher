@@ -45,7 +45,7 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
     }
 
     private onFormChange = (_: any, {name, value}: {name: string, value: any}) => {
-        if (name === 'launchViaSteam' || name === 'autoInjectEnabled') {
+        if (name === 'launchViaSteam' || name === 'autoInjectEnabled' || name === 'launchWithGOTYFlag') {
             value = value !== 1;
         }
         if (name === 'autoInjectTimer') {
@@ -161,6 +161,13 @@ export class SettingsModal extends React.Component<SettingsModalProps, SettingsM
                                 disabled={this.state.editedConfig.masterServerMode !== MasterServerMode.CUSTOM}
                                 value={this.state.editedConfig.masterServerHost}
                                 onChange={this.onFormChange} />
+                            <Form.Checkbox
+                                onChange={this.onFormChange}
+                                name={'launchWithGOTYFlag'}
+                                label='GOTY Mode'
+                                checked={this.state.editedConfig.launchWithGOTYFlag}
+                                value={this.state.editedConfig.launchWithGOTYFlag ? 1 : 0}
+                            />
                         </Form.Group>
                         <Form.Checkbox
                             onChange={this.onFormChange}
